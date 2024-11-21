@@ -7,7 +7,7 @@ plugins {
     id("com.palantir.docker") version "0.35.0" apply false
 }
 
-group = "com.d2"
+rootProject.group = "com.d2"
 java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
@@ -22,20 +22,29 @@ configurations {
     }
 }
 
-val coreProjectName = "core"
+
+
 subprojects {
+    val isAppService = project.name.contains("service")
+    project.version = when (project.name) {
+        "auth-service" -> "1.0.0"
+        "event-service" -> "1.0.0"
+        "notification-service" -> "1.0.0"
+        "product-service" -> "1.0.0"
+        else -> "1.0.0"
+    }
+
     apply(plugin = "java")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.springframework.boot")
+    if (isAppService) apply(plugin = "com.palantir.docker")
 
     repositories {
         mavenCentral()
     }
 
     dependencies {
-        if (project.name != coreProjectName) {
-            implementation(project(":core"))
-        }
+        if (isAppService) implementation(project(":core"))
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.boot:spring-boot-starter")
 
@@ -53,21 +62,20 @@ subprojects {
         testImplementation("org.springframework.boot:spring-boot-starter-test")
     }
 
-    afterEvaluate {
-        if (project.name != coreProjectName) {
-            apply(plugin = "com.palantir.docker")
-            configure<DockerExtension> {
+    if (isAppService) {
+        configure<DockerExtension> {
+            val bootJar: org.springframework.boot.gradle.tasks.bundling.BootJar by tasks
+            val registry = "d2-core"
+            val projectPrefix = "prototype"
+            name = "$registry/$projectPrefix-${project.name}:${project.version}"
 
-                val bootJar: org.springframework.boot.gradle.tasks.bundling.BootJar by tasks
-                name = "${rootProject.name}/${project.name}:${project.version}"
+            //TODO: PATH CHANGE
+            val path = "$rootDir/../prototype-infra/dockerfile/spring-app/Dockerfile"
+            setDockerfile(file(path))
 
-                //TODO: PATH CHANGE
-                setDockerfile(file("$rootDir/../prototype-infra/spring-app/Dockerfile"))
+            files(bootJar.outputs.files)
 
-                files(bootJar.outputs.files)
-
-                buildArgs(mapOf("JAR_FILE" to bootJar.outputs.files.singleFile.name))
-            }
+            buildArgs(mapOf("JAR_FILE" to bootJar.outputs.files.singleFile.name))
         }
     }
 
