@@ -7,9 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCodeImpl implements ErrorCode {
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "G-001", "internal server error", "현재 시스템에 일시적인 문제가 발생했습니다. 조금 후 다시 시도해주세요. [G-001]"),
-    SERVICE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "G-002", "service error", "현재 시스템에 일시적인 문제가 발생했습니다. 조금 후 다시 시도해주세요. [G-002]"),
-    DB_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "G-003", "database error", "현재 시스템에 일시적인 문제가 발생했습니다. 조금 후 다시 시도해주세요. [G-003]"),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "G-001", "internal server error", "현재 시스템에 일시적인 문제가 발생했습니다. 조금 후 다시 시도해주세요."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED.value(), "G-004", "unauthorized access", "접근 권한이 없습니다. 로그인 후 다시 시도해주세요."),
     FORBIDDEN(HttpStatus.FORBIDDEN.value(), "G-005", "forbidden resource", "리소스에 접근할 권한이 없습니다."),
     BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "G-006", "bad request", "잘못된 요청입니다. 입력 값을 확인해주세요."),

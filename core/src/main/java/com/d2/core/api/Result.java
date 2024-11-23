@@ -2,10 +2,10 @@ package com.d2.core.api;
 
 import com.d2.core.error.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class Result {
     private String code;
@@ -28,8 +28,17 @@ public class Result {
     public static Result ERROR(ErrorCode errorCode) {
         Result result = new Result();
         result.code = errorCode.getCode();
-        result.reason = errorCode.getReason();
-        result.message = errorCode.getMessage();
+        result.reason = "Reason: " + errorCode.getReason();
+        result.message = errorCode.getMessage() + "[" + errorCode.getCode() + "]";
+
+        return result;
+    }
+
+    public static Result ERROR(ErrorCode errorCode, String reasonArg) {
+        Result result = new Result();
+        result.code = errorCode.getCode();
+        result.reason = "Reason: " + errorCode.getReason() + ": " + "[ " + reasonArg + " ]";
+        result.message = errorCode.getMessage() + "[" + errorCode.getCode() + "]";
 
         return result;
     }
