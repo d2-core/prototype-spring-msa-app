@@ -1,3 +1,4 @@
+//-Dspring.profiles.active=local
 import com.palantir.gradle.docker.DockerExtension
 
 plugins {
@@ -21,8 +22,6 @@ configurations {
         extendsFrom(configurations.annotationProcessor.get())
     }
 }
-
-
 
 subprojects {
     val isAppService = project.name.contains("service")
@@ -70,7 +69,7 @@ subprojects {
             name = "$registry/$projectPrefix-${project.name}:${project.version}"
 
             //TODO: PATH CHANGE
-            val path = "$rootDir/../prototype-infra/dockerfile/spring-app/Dockerfile"
+            val path = "../../prototype-infra/dockerfile/spring-app/Dockerfile"
             setDockerfile(file(path))
 
             files(bootJar.outputs.files)
