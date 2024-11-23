@@ -1,10 +1,9 @@
 package com.d2.core.api;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class API<T> {
     private Result result;
@@ -14,6 +13,14 @@ public class API<T> {
         API<T> api = new API<>();
         api.result = Result.OK();
         api.body = body;
+
+        return api;
+    }
+
+    public static  API<Object> NO_CONTENT() {
+        API<Object> api = new API<>();
+        api.result = Result.OK();
+        api.body = new Object();
 
         return api;
     }
