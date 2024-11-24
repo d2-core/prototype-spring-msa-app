@@ -18,5 +18,9 @@ public interface AdminUserPort {
 
 	AdminUserDto getAdminUserByEmailAndPasswordWithThrow(String email, String password);
 
+	AdminUserDto getAdminUser(Long id);
+
+	List<AdminUserDto> getAdminUserList();
+
 	List<AdminUserPermission> getAdminUserPermissions(Long adminUserId);
 }

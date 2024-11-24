@@ -93,6 +93,29 @@ public class AdminUserPersistenceAdapter implements AdminUserPort {
 	}
 
 	@Override
+	public AdminUserDto getAdminUser(Long id) {
+		AdminUserJpaEntity adminUser = queryFactory
+			.selectFrom(adminUserJpaEntity)
+			.where(adminUserJpaEntity.id.eq(id))
+			.fetchFirst();
+		if (adminUser != null) {
+			return AdminUserDto.from(adminUser);
+		} else {
+			throw new ApiExceptionImpl(ErrorCodeImpl.NOT_FOUND, "id: %s".formatted(id));
+		}
+	}
+
+	@Override
+	public List<AdminUserDto> getAdminUserList() {
+		return queryFactory
+			.selectFrom(adminUserJpaEntity)
+			.fetch()
+			.stream()
+			.map(AdminUserDto::from)
+			.toList();
+	}
+
+	@Override
 	public List<AdminUserPermission> getAdminUserPermissions(Long adminUserId) {
 		return queryFactory
 			.select(adminUserPermissionJpaEntity.permission)
