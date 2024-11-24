@@ -1,15 +1,13 @@
 package com.d2.core.exception;
 
-import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import com.d2.core.api.Result;
-import com.d2.core.error.ErrorCode;
 
 public interface ApiException {
-    Integer getHttpCode();
+	Integer getHttpCode();
 
-    Result getResult();
+	Result getResult();
 
-    String getReasonForServerLog();
+	String getReasonForServerLog();
 
-    Object getBody();
+	Object getBody();
 }

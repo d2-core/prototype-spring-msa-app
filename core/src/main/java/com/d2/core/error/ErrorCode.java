@@ -1,11 +1,11 @@
 package com.d2.core.error;
 
 public interface ErrorCode {
-    Integer getHttpCode();
+	Integer getHttpCode();
 
-    String getCode();
+	String getCode();
 
-    String getReason();
+	String getReason();
 
-    String getMessage();
+	String getMessage();
 }

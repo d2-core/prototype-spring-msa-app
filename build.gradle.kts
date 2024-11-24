@@ -6,7 +6,35 @@ plugins {
     id("org.springframework.boot") version "3.1.5" apply false
     id("io.spring.dependency-management") version "1.1.3" apply false
     id("com.palantir.docker") version "0.35.0" apply false
+
+    id("org.ec4j.editorconfig") version "0.0.3"
+    id("checkstyle")
 }
+
+editorconfig {
+    excludes = listOf("build")
+}
+
+tasks.named("check") {
+    dependsOn("editorconfigCheck")
+}
+
+
+checkstyle {
+    maxWarnings = 0
+    configFile = file("${rootDir}/config/naver-checkstyle-rules.xml")
+    configProperties["suppressionFile"] = "${rootDir}/config/naver-checkstyle-suppressions.xml"
+    toolVersion = "8.42"
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+    systemProperty("file.encoding", "UTF-8")
+}
+
 
 rootProject.group = "com.d2"
 java {
@@ -54,8 +82,10 @@ subprojects {
         annotationProcessor("org.projectlombok:lombok")
         annotationProcessor("jakarta.annotation:jakarta.annotation-api")
         annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+        implementation("org.springframework.boot:spring-boot-starter-validation")
 
-        testRuntimeOnly("com.h2database:h2")
+        testImplementation("org.assertj:assertj-core:3.22.0")
+        testImplementation("com.h2database:h2")
         testImplementation(platform("org.junit:junit-bom:5.9.1"))
         testImplementation("org.junit.jupiter:junit-jupiter")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
