@@ -189,3 +189,5 @@ bin/
 
 *.bin
 resolvedMainClassName
+
+.env
