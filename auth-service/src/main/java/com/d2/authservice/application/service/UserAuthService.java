@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 public class UserAuthService implements UserAuthUseCase {
 
 	@Override
-	public UserLogin loginWithKakao() {
+	public UserLogin loginWithKakao(String code) {
 		return null;
 	}
 
