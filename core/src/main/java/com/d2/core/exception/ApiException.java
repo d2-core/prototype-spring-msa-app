@@ -7,7 +7,7 @@ public interface ApiException {
 
 	Result getResult();
 
-	String getReasonForServerLog();
+	String getLog();
 
 	Object getBody();
 }

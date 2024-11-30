@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 public class ApiExceptionImpl extends RuntimeException implements ApiException {
 	private Integer httpCode;
 	private Result result;
-	private String reasonForServerLog;
+	private String log;
 	private Object body;
 
 	public ApiExceptionImpl(ErrorCode errorCode, String reasonArg) {
 		super();
 		this.httpCode = errorCode.getHttpCode();
 		this.result = Result.ERROR(errorCode, reasonArg);
-		this.reasonForServerLog = result.getReason();
+		this.log = "Code: " + errorCode.getCode() + ", Reason: " + errorCode.getReason() + ": [" + reasonArg + "]";
 		this.body = new Object();
 	}
 
@@ -26,7 +26,7 @@ public class ApiExceptionImpl extends RuntimeException implements ApiException {
 		super();
 		this.httpCode = errorCode.getHttpCode();
 		this.result = Result.ERROR(errorCode, reasonArg);
-		this.reasonForServerLog = result.getReason();
+		this.log = "Code: " + errorCode.getCode() + ", Reason: " + errorCode.getReason() + ": [" + reasonArg + "]";
 		this.body = body;
 	}
 
@@ -34,7 +34,7 @@ public class ApiExceptionImpl extends RuntimeException implements ApiException {
 		super();
 		this.httpCode = errorCode.getHttpCode();
 		this.result = Result.ERROR(errorCode, reasonArg);
-		this.reasonForServerLog = "[ " + reasonArg + " ] " + "Reason: " + tx.getLocalizedMessage();
+		this.log = "Code: " + errorCode.getCode() + ", Reason: " + tx.getLocalizedMessage() + ": [" + reasonArg + "]";
 		this.body = new Object();
 	}
 
@@ -42,7 +42,7 @@ public class ApiExceptionImpl extends RuntimeException implements ApiException {
 		super();
 		this.httpCode = errorCode.getHttpCode();
 		this.result = Result.ERROR(errorCode, reasonArg);
-		this.reasonForServerLog = "[ " + reasonArg + " ] " + "Reason: " + tx.getLocalizedMessage();
+		this.log = "Code: " + errorCode.getCode() + ", Reason: " + tx.getLocalizedMessage() + ": [" + reasonArg + "]";
 		this.body = body;
 	}
 }
