@@ -2,6 +2,7 @@ package com.d2.core.exceptionhandler;
 
 import java.net.BindException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.annotation.Order;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.d2.core.api.API;
 import com.d2.core.api.Result;
@@ -26,6 +28,18 @@ import lombok.extern.slf4j.Slf4j;
 @Order(Integer.MAX_VALUE)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+	@ExceptionHandler(NoHandlerFoundException.class)
+	public ResponseEntity<API<Object>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
+		log.error(ex.getMessage(), ex);
+
+		Map<String, String> body = Map.of("path", ex.getRequestURL());
+		Result result = Result.ERROR(ErrorCodeImpl.NOT_FOUND);
+
+		return ResponseEntity
+			.status(ErrorCodeImpl.NOT_FOUND.getHttpCode())
+			.body(API.ERROR(result, body));
+	}
 
 	@ExceptionHandler({
 		HttpMessageNotReadableException.class,

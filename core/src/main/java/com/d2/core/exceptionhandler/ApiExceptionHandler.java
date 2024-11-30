@@ -17,7 +17,7 @@ public class ApiExceptionHandler {
 
 	@ExceptionHandler(value = ApiExceptionImpl.class)
 	public ResponseEntity<API<Object>> handleException(ApiExceptionImpl ex) {
-		log.error(ex.getReasonForServerLog(), ex);
+		log.error(ex.getLog(), ex);
 
 		return ResponseEntity
 			.status(ex.getHttpCode())
