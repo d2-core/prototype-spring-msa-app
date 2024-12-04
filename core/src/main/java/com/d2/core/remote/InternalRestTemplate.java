@@ -62,8 +62,13 @@ public class InternalRestTemplate {
 	}
 
 	private URI convertUri(String url, Object query) {
+		if (query == null) {
+			return URI.create(url);
+		}
+		
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
-		Map<String, Object> map = objectMapper.convertValue(query, Map.class);
+		Map<String, Object> map = objectMapper.convertValue(query, new TypeReference<>() {
+		});
 
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			if (entry.getValue() != null) {
