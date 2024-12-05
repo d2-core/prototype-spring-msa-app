@@ -26,7 +26,7 @@ public class RequestUUIDResolver implements HandlerMethodArgumentResolver {
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		String uuid = webRequest.getHeader(HeaderConstant.X_REQUEST_UUID);
+		String uuid = webRequest.getHeader(HeaderConstant.X_D2_REQUEST_UUID);
 
 		if (uuid == null) {
 			return new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "uuid is null");

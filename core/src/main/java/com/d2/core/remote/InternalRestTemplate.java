@@ -31,41 +31,41 @@ public class InternalRestTemplate {
 			.build();
 	}
 
-	public <T> API<T> get(String url, Object query) {
+	public <T> API<T> get(String url, Object query, TypeReference<API<T>> typeReference) {
 		URI uri = convertUri(url, query);
 		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, HttpEntity.EMPTY, String.class);
 
-		return validate(uri.toString(), response);
+		return validate(uri.toString(), response, typeReference);
 	}
 
-	public <T> API<T> post(String url, Object body) {
+	public <T> API<T> post(String url, Object body, TypeReference<API<T>> typeReference) {
 		HttpEntity<?> entity = new HttpEntity<>(body);
 
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
-		return validate(url, response);
+		return validate(url, response, typeReference);
 	}
 
-	public <T> API<T> patch(String url, Object body) {
+	public <T> API<T> patch(String url, Object body, TypeReference<API<T>> typeReference) {
 		HttpEntity<?> entity = new HttpEntity<>(body);
 
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
 
-		return validate(url, response);
+		return validate(url, response, typeReference);
 	}
 
-	public <T> API<T> delete(String url, Object query) {
+	public <T> API<T> delete(String url, Object query, TypeReference<API<T>> typeReference) {
 		URI uri = convertUri(url, query);
 		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
 
-		return validate(uri.toString(), response);
+		return validate(uri.toString(), response, typeReference);
 	}
 
 	private URI convertUri(String url, Object query) {
 		if (query == null) {
 			return URI.create(url);
 		}
-		
+
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
 		Map<String, Object> map = objectMapper.convertValue(query, new TypeReference<>() {
 		});
@@ -79,10 +79,9 @@ public class InternalRestTemplate {
 		return uriBuilder.build().encode().toUri();
 	}
 
-	private <T> API<T> validate(String url, ResponseEntity<String> response) {
+	private <T> API<T> validate(String url, ResponseEntity<String> response, TypeReference<API<T>> typeReference) {
 		try {
-			return objectMapper.readValue(response.getBody(), new TypeReference<>() {
-			});
+			return objectMapper.readValue(response.getBody(), typeReference);
 		} catch (JsonProcessingException ex) {
 			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, ex,
 				"url: %s, response body: %s".formatted(url, response.getBody()));

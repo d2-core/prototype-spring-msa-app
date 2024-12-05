@@ -1,6 +1,7 @@
 package com.d2.core.filter;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Objects;
 
 import org.springframework.stereotype.Component;
@@ -29,16 +30,17 @@ public class AuthFilter implements Filter {
 		ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest)servletRequest;
 
-		String uuid = httpRequest.getHeader(HeaderConstant.X_REQUEST_UUID);
-		String role = httpRequest.getHeader(HeaderConstant.X_D2_AUTH_ROLE);
-		String id = httpRequest.getHeader(HeaderConstant.X_D2_AUTH_ID);
-		String authDetail = httpRequest.getHeader(HeaderConstant.X_D2_AUTH_DETAIL);
+		Enumeration<String> headerNames = httpRequest.getHeaderNames();
 
 		RequestAttributes requestAttributes = Objects.requireNonNull(RequestContextHolder.getRequestAttributes());
-		requestAttributes.setAttribute(HeaderConstant.X_REQUEST_UUID, uuid, RequestAttributes.SCOPE_REQUEST);
-		requestAttributes.setAttribute(HeaderConstant.X_D2_AUTH_ROLE, role, RequestAttributes.SCOPE_REQUEST);
-		requestAttributes.setAttribute(HeaderConstant.X_D2_AUTH_ID, id, RequestAttributes.SCOPE_REQUEST);
-		requestAttributes.setAttribute(HeaderConstant.X_D2_AUTH_DETAIL, authDetail, RequestAttributes.SCOPE_REQUEST);
+		while (headerNames.hasMoreElements()) {
+			String key = headerNames.nextElement();
+			String value = httpRequest.getHeader(key);
+
+			if (key.startsWith(HeaderConstant.X_D2_PREFIX)) {
+				requestAttributes.setAttribute(key, value, RequestAttributes.SCOPE_REQUEST);
+			}
+		}
 
 		filterChain.doFilter(servletRequest, servletResponse);
 
