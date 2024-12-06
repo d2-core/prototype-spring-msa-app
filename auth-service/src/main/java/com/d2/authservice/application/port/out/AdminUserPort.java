@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.d2.authservice.model.dto.AdminUserDto;
 import com.d2.authservice.model.enums.AdminUserPermission;
+import com.d2.authservice.model.enums.AdminUserSortStandard;
 import com.d2.authservice.model.enums.AdminUserStatus;
+import com.d2.core.model.dto.SortDto;
 import com.d2.core.model.enums.Role;
 
 public interface AdminUserPort {
@@ -20,7 +22,8 @@ public interface AdminUserPort {
 
 	AdminUserDto getAdminUser(Long id);
 
-	List<AdminUserDto> getAdminUserList();
+	List<AdminUserDto> getAdminUserList(String email, String name, String phoneNumber,
+		List<SortDto<AdminUserSortStandard>> sortList, Long pageNo, Integer pageSize);
 
 	List<AdminUserPermission> getAdminUserPermissions(Long adminUserId);
 }
