@@ -1,17 +1,16 @@
 package com.d2.authservice.application.service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.d2.authservice.AdminUserConstant;
 import com.d2.authservice.application.port.in.AdminUserAuthUseCase;
 import com.d2.authservice.application.port.out.AdminUserPort;
 import com.d2.authservice.application.port.out.SmsVerificationPort;
 import com.d2.authservice.application.port.out.TokenPort;
+import com.d2.authservice.constant.TokenConstant;
 import com.d2.authservice.error.AdminUserErrorCodeImpl;
 import com.d2.authservice.model.domain.AdminUserLogin;
 import com.d2.authservice.model.dto.AdminUserDto;
@@ -62,7 +61,7 @@ public class AdminUserAuthService implements AdminUserAuthUseCase {
 
 	@Override
 	public AdminUserLogin login(String email, String password) {
-		AdminUserDto adminUserDto = new AdminUserDto();
+		AdminUserDto adminUserDto;
 
 		try {
 			adminUserDto = adminUserPort.getAdminUserByEmailAndPasswordWithThrow(email, password);
@@ -80,12 +79,9 @@ public class AdminUserAuthService implements AdminUserAuthUseCase {
 	}
 
 	public Map<String, Object> getAdminUserClaimData(AdminUserDto adminUserDto) {
-		Map<String, Object> data = new HashMap<>();
-
-		data.put(AdminUserConstant.ROLE, adminUserDto.getRole().name());
-		data.put(AdminUserConstant.ADMIN_USER_ID, String.valueOf(adminUserDto.getId()));
-		data.put(AdminUserConstant.ADMIN_USER_PERMISSIONS, adminUserDto.getPermissions());
-
-		return data;
+		return Map.of(
+			TokenConstant.ROLE, adminUserDto.getRole().name(),
+			TokenConstant.ID, String.valueOf(adminUserDto.getId())
+		);
 	}
 }

@@ -1,10 +1,13 @@
 package com.d2.authservice.model.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.d2.authservice.model.dto.AdminUserDto;
 import com.d2.authservice.model.dto.TokenDto;
+import com.d2.authservice.model.enums.AdminUserPermission;
 import com.d2.authservice.model.enums.AdminUserStatus;
+import com.d2.core.model.enums.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,19 +16,25 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AdminUserLogin {
-	private final Long id;
+	private Long id;
 
-	private final String name;
+	private Role role;
 
-	private final String email;
+	private List<AdminUserPermission> permissions;
 
-	private final String phoneNumber;
+	private String name;
 
-	private final AdminUserStatus status;
+	private String email;
 
-	private final LocalDateTime registeredAt;
+	private String password;
 
-	private final LocalDateTime lastLoginAt;
+	private String phoneNumber;
+
+	private AdminUserStatus status;
+
+	private LocalDateTime registeredAt;
+
+	private LocalDateTime lastLoginAt;
 
 	private final Token token;
 
@@ -48,12 +57,15 @@ public class AdminUserLogin {
 			.build();
 		return new AdminUserLogin(
 			adminUserDto.getId(),
+			adminUserDto.getRole(),
+			adminUserDto.getPermissions(),
 			adminUserDto.getName(),
 			adminUserDto.getEmail(),
+			adminUserDto.getPassword(),
 			adminUserDto.getPhoneNumber(),
 			adminUserDto.getStatus(),
 			adminUserDto.getRegisteredAt(),
-			adminUserDto.getLastLoginAt(),
+			adminUserDto.getRegisteredAt(),
 			token
 		);
 	}
