@@ -19,7 +19,6 @@ tasks.named("check") {
     dependsOn("editorconfigCheck")
 }
 
-
 checkstyle {
     maxWarnings = 0
     configFile = file("${rootDir}/config/naver-checkstyle-rules.xml")
@@ -34,7 +33,6 @@ tasks.withType<JavaCompile> {
 tasks.withType<Test> {
     systemProperty("file.encoding", "UTF-8")
 }
-
 
 rootProject.group = "com.d2"
 java {
@@ -64,14 +62,18 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.springframework.boot")
-    if (isAppService) apply(plugin = "com.palantir.docker")
+    if (isAppService) {
+        apply(plugin = "com.palantir.docker")
+    }
 
     repositories {
         mavenCentral()
     }
 
     dependencies {
-        if (isAppService) implementation(project(":core"))
+        if (isAppService) {
+            implementation(project(":core"))
+        }
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.boot:spring-boot-starter")
 

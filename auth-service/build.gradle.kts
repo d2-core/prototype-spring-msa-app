@@ -7,7 +7,6 @@ bootJar.enabled = true
 jar.enabled = false
 
 dependencies {
-    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("com.mysql:mysql-connector-j")
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
