@@ -131,9 +131,8 @@ class AdminUserAuthAuthServiceAuthTestInjectionAuthInjection extends AuthTestCon
 		String email = "d2@naver.com";
 		String password = "password";
 
-		AdminUserDto mockAdminUserDto = new AdminUserDto(1L, Role.ADMIN,
-			"d2", email, password, "01012341234", AdminUserStatus.REGISTERED, LocalDateTime.now(),
-			LocalDateTime.now());
+		AdminUserDto mockAdminUserDto = new AdminUserDto(1L, Role.ADMIN, List.of(), "d2", email, password,
+			"01012341234", AdminUserStatus.REGISTERED, LocalDateTime.now(), LocalDateTime.now());
 
 		TokenDto mockAccessToken = new TokenDto("access-token", LocalDateTime.now().plusHours(1));
 		TokenDto mockRefreshToken = new TokenDto("refresh-token", LocalDateTime.now().plusHours(12));
