@@ -1,0 +1,24 @@
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+  config:
+    import: optional:file:.env[.properties]
+kakao:
+  rest:
+    key: ${KAKAO_REST_API_KEY:KAKAO}
+  login:
+    redirect:
+      url: http://localhost:3000/auth/callback/kakao
+    access-token:
+      url: https://kauth.kakao.com/oauth/token
+    user-info:
+      url: https://kapi.kakao.com/v2/user/me
+  mvc:
+    throw-exception-if-no-handler-found: true
+    web:
+      resources:
+        add-mappings: false
+
