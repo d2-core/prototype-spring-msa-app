@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -92,7 +93,7 @@ class AdminUserAuthAuthServiceAuthTestInjectionAuthInjection extends AuthTestCon
 		String password = "password";
 		String phoneNumber = "01012341234";
 		String authCode = "12345";
-		AdminUserDto mockAdminUserDto = new AdminUserDto(1L, Role.ADMIN, name, email,
+		AdminUserDto mockAdminUserDto = new AdminUserDto(1L, Role.ADMIN, List.of(), name, email,
 			password, phoneNumber, AdminUserStatus.REGISTERED, LocalDateTime.now(), LocalDateTime.now());
 
 		TokenDto mockAccessToken = new TokenDto("access-token", LocalDateTime.now().plusHours(1));
