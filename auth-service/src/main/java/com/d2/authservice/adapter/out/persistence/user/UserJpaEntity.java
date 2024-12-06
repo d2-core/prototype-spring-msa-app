@@ -1,13 +1,12 @@
-package com.d2.authservice.adapter.out.persistence.adminuser;
+package com.d2.authservice.adapter.out.persistence.user;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.d2.authservice.model.enums.AdminUserStatus;
+import com.d2.authservice.model.enums.UserStatus;
 import com.d2.core.model.enums.Role;
 
 import jakarta.persistence.Column;
@@ -19,20 +18,19 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Table(name = "admin_users")
+@Table(name = "users")
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class AdminUserJpaEntity {
+public class UserJpaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -42,20 +40,17 @@ public class AdminUserJpaEntity {
 	private Role role;
 
 	@Column(length = 50, nullable = false)
-	private String name;
+	private String nickname;
 
 	@Column(length = 100, nullable = false, unique = true)
 	private String email;
-
-	@Column(length = 100, nullable = false)
-	private String password;
 
 	@Column(length = 100, unique = true)
 	private String phoneNumber;
 
 	@Column(length = 50, nullable = false)
 	@Enumerated(EnumType.STRING)
-	private AdminUserStatus status;
+	private UserStatus status;
 
 	@CreatedDate
 	private LocalDateTime registeredAt;
@@ -65,22 +60,35 @@ public class AdminUserJpaEntity {
 
 	private LocalDateTime lastLoginAt;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "admin_user_id", nullable = false)
-	private List<AdminUserPermissionJpaEntity> permissions = List.of();
+	@OneToOne(mappedBy = "userJpaEntity", fetch = FetchType.LAZY)
+	private UserSocialProfileJpaEntity userSocialProfileJpaEntity;
 
-	public AdminUserJpaEntity(Role role, String name, String email, String password, String phoneNumber,
-		AdminUserStatus status, LocalDateTime lastLoginAt) {
+	public void setUserSocialProfileJpaEntity(UserSocialProfileJpaEntity userSocialProfileJpaEntity) {
+		this.userSocialProfileJpaEntity = userSocialProfileJpaEntity;
+		if (userSocialProfileJpaEntity.getUserJpaEntity() != this) {
+			userSocialProfileJpaEntity.setUserJpaEntity(this);
+		}
+	}
+
+	public UserJpaEntity(Role role, String nickname, String email, String phoneNumber, UserStatus status,
+		LocalDateTime lastLoginAt) {
 		this.role = role;
-		this.name = name;
+		this.nickname = nickname;
 		this.email = email;
-		this.password = password;
 		this.phoneNumber = phoneNumber;
 		this.status = status;
 		this.lastLoginAt = lastLoginAt;
 	}
 
-	public void addAdminUserPermissionJpaEntity(AdminUserPermissionJpaEntity permission) {
-		this.permissions = List.of(permission);
+	public UserJpaEntity update(Role role, String nickname, String email, String phoneNumber, UserStatus status,
+		LocalDateTime lastLoginAt) {
+		this.role = role;
+		this.nickname = nickname;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.status = status;
+		this.lastLoginAt = lastLoginAt;
+
+		return this;
 	}
 }
