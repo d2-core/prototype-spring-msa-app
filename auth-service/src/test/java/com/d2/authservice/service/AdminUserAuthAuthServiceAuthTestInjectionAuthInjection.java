@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +29,7 @@ import com.d2.core.error.ErrorCodeImpl;
 import com.d2.core.exception.ApiExceptionImpl;
 import com.d2.core.model.enums.Role;
 
-class AdminUserAuthServiceAuthTest extends AuthTestConfig {
+class AdminUserAuthAuthServiceAuthTestInjectionAuthInjection extends AuthTestConfig {
 	@Mock
 	TokenPort tokenPort;
 
@@ -93,7 +92,7 @@ class AdminUserAuthServiceAuthTest extends AuthTestConfig {
 		String password = "password";
 		String phoneNumber = "01012341234";
 		String authCode = "12345";
-		AdminUserDto mockAdminUserDto = new AdminUserDto(1L, Role.ADMIN, List.of(AdminUserPermission.READ), name, email,
+		AdminUserDto mockAdminUserDto = new AdminUserDto(1L, Role.ADMIN, name, email,
 			password, phoneNumber, AdminUserStatus.REGISTERED, LocalDateTime.now(), LocalDateTime.now());
 
 		TokenDto mockAccessToken = new TokenDto("access-token", LocalDateTime.now().plusHours(1));
@@ -131,7 +130,7 @@ class AdminUserAuthServiceAuthTest extends AuthTestConfig {
 		String email = "d2@naver.com";
 		String password = "password";
 
-		AdminUserDto mockAdminUserDto = new AdminUserDto(1L, Role.ADMIN, List.of(AdminUserPermission.READ),
+		AdminUserDto mockAdminUserDto = new AdminUserDto(1L, Role.ADMIN,
 			"d2", email, password, "01012341234", AdminUserStatus.REGISTERED, LocalDateTime.now(),
 			LocalDateTime.now());
 

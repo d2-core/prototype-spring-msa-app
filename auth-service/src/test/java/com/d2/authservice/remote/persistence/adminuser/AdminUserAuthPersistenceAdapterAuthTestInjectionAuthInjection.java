@@ -26,7 +26,7 @@ import com.d2.core.exception.ApiExceptionImpl;
 import com.d2.core.model.enums.Role;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-class AdminUserPersistenceAdapterAuthTest extends AuthTestConfig {
+class AdminUserAuthPersistenceAdapterAuthTestInjectionAuthInjection extends AuthTestConfig {
 	@Autowired
 	JPAQueryFactory queryFactory;
 
