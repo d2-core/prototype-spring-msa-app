@@ -1,11 +1,10 @@
 package com.d2.authservice.application.port.in;
 
-import com.d2.authservice.model.domain.AdminUserTokenClaims;
-import com.d2.authservice.model.domain.UserTokenClaims;
+import com.d2.authservice.model.domain.Token;
+import com.d2.authservice.model.domain.TokenClaims;
 
 public interface TokenUseCase {
+	TokenClaims validateToken(String accessToken);
 
-	AdminUserTokenClaims validateTokenForAdminUser(String jwtToken);
-
-	UserTokenClaims validateTokenForUser(String jwtToken);
+	Token refreshToken(String refreshToken);
 }

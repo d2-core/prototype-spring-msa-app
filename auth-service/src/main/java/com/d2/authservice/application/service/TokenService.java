@@ -1,17 +1,15 @@
 package com.d2.authservice.application.service;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.d2.authservice.AdminUserConstant;
 import com.d2.authservice.application.port.in.TokenUseCase;
-import com.d2.authservice.application.port.out.AdminUserPort;
 import com.d2.authservice.application.port.out.TokenPort;
-import com.d2.authservice.model.domain.AdminUserTokenClaims;
-import com.d2.authservice.model.domain.UserTokenClaims;
-import com.d2.authservice.model.enums.AdminUserPermission;
+import com.d2.authservice.constant.TokenConstant;
+import com.d2.authservice.model.domain.Token;
+import com.d2.authservice.model.domain.TokenClaims;
+import com.d2.authservice.model.dto.TokenDto;
 import com.d2.core.model.enums.Role;
 
 import lombok.RequiredArgsConstructor;
@@ -19,23 +17,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class TokenService implements TokenUseCase {
-
-	private final AdminUserPort adminUserPort;
 	private final TokenPort tokenPort;
 
 	@Override
-	public AdminUserTokenClaims validateTokenForAdminUser(String jwtToken) {
+	public TokenClaims validateToken(String jwtToken) {
 		Map<String, Object> data = tokenPort.validateTokenWithThrow(jwtToken);
 
-		Role role = Role.valueOf(data.get(AdminUserConstant.ROLE).toString());
-		Long adminUserId = Long.valueOf(data.get(AdminUserConstant.ADMIN_USER_ID).toString());
-		List<AdminUserPermission> permissions = adminUserPort.getAdminUserPermissions(adminUserId);
+		Role role = Role.valueOf(data.get(TokenConstant.ROLE).toString());
+		Long id = Long.valueOf(data.get(TokenConstant.ID).toString());
 
-		return AdminUserTokenClaims.from(role, adminUserId, permissions);
+		return TokenClaims.from(role, id);
 	}
 
 	@Override
-	public UserTokenClaims validateTokenForUser(String jwtToken) {
-		return new UserTokenClaims(1L);
+	public Token refreshToken(String refreshToken) {
+		Map<String, Object> data = tokenPort.validateTokenWithThrow(refreshToken);
+		TokenDto tokenDto = tokenPort.issueAccessToken(data);
+		return Token.from(tokenDto);
 	}
 }
