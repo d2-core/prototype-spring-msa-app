@@ -4,18 +4,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.d2.authservice.model.dto.AdminUserDto;
-import com.d2.authservice.model.enums.AdminUserPermission;
+import com.d2.authservice.model.enums.AdminUserRole;
 import com.d2.authservice.model.enums.AdminUserSortStandard;
 import com.d2.authservice.model.enums.AdminUserStatus;
 import com.d2.core.model.dto.SortDto;
-import com.d2.core.model.enums.Role;
 
 public interface AdminUserPort {
-	Boolean existEmail(String email);
+	Boolean existEmailOrPhoneNumber(String email, String phoneNumber);
 
-	Boolean existPhoneNumber(String phoneNumber);
-
-	AdminUserDto register(String name, Role role, AdminUserPermission permission, String email, String password,
+	AdminUserDto register(AdminUserRole adminUserRole, String nickname, String email, String password,
 		String phoneNumber, AdminUserStatus status, LocalDateTime lastLoginAt);
 
 	AdminUserDto getAdminUserByEmailAndPasswordWithThrow(String email, String password);
@@ -24,6 +21,4 @@ public interface AdminUserPort {
 
 	List<AdminUserDto> getAdminUserList(String email, String name, String phoneNumber,
 		List<SortDto<AdminUserSortStandard>> sortList, Long pageNo, Integer pageSize);
-
-	List<AdminUserPermission> getAdminUserPermissions(Long adminUserId);
 }

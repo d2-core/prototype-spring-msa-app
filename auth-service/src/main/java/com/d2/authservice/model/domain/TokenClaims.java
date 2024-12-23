@@ -1,6 +1,6 @@
 package com.d2.authservice.model.domain;
 
-import com.d2.core.model.enums.Role;
+import com.d2.core.model.enums.TokenRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,10 +8,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class TokenClaims {
-	private final Role role;
+	private final TokenRole tokenRole;
 	private final Long id;
 
-	public static TokenClaims from(Role role, Long id) {
-		return new TokenClaims(role, id);
+	public static TokenClaims from(TokenRole tokenRole, Long id) {
+		return new TokenClaims(tokenRole, id);
 	}
 }

@@ -15,7 +15,6 @@ import com.d2.authservice.model.enums.UserSortStandard;
 import com.d2.authservice.model.enums.UserStatus;
 import com.d2.core.constant.PagingConstant;
 import com.d2.core.model.dto.SortDto;
-import com.d2.core.model.enums.Role;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -32,7 +31,7 @@ public class UserPersistenceAdapter implements UserPort {
 	private final UserSocialProfileJpaRepository userSocialProfileJpaRepository;
 
 	@Override
-	public UserDto upsertBySocialProfileId(String socialProfileId, Role role, String nickname, String email,
+	public UserDto upsertBySocialProfileId(String socialProfileId, String nickname, String email,
 		String phoneNumber,
 		UserStatus userStatus,
 		LocalDateTime lastLoginAt, SocialCategory socialCategory) {
@@ -48,11 +47,11 @@ public class UserPersistenceAdapter implements UserPort {
 		UserSocialProfileJpaEntity userSocialProfileJpaEntity;
 		if (user == null) {
 			userSocialProfileJpaEntity = new UserSocialProfileJpaEntity(socialProfileId, SocialCategory.KAKAO);
-			userJpaEntity = new UserJpaEntity(role, nickname, email, phoneNumber, userStatus, lastLoginAt);
+			userJpaEntity = new UserJpaEntity(nickname, email, phoneNumber, userStatus, lastLoginAt);
 
 		} else {
 			userSocialProfileJpaEntity = user.getUserSocialProfileJpaEntity().update(socialProfileId, socialCategory);
-			userJpaEntity = user.update(role, nickname, email, phoneNumber, userStatus, lastLoginAt);
+			userJpaEntity = user.update(nickname, email, phoneNumber, userStatus, lastLoginAt);
 		}
 
 		UserSocialProfileJpaEntity savedUserSocialProfile = userSocialProfileJpaRepository.save(

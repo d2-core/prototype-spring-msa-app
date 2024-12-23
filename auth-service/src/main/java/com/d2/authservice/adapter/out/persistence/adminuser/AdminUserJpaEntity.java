@@ -1,26 +1,22 @@
 package com.d2.authservice.adapter.out.persistence.adminuser;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.d2.authservice.model.enums.AdminUserRole;
 import com.d2.authservice.model.enums.AdminUserStatus;
-import com.d2.core.model.enums.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,10 +35,10 @@ public class AdminUserJpaEntity {
 
 	@Column(length = 50, nullable = false)
 	@Enumerated(EnumType.STRING)
-	private Role role;
+	private AdminUserRole adminUserRole;
 
 	@Column(length = 50, nullable = false)
-	private String name;
+	private String nickname;
 
 	@Column(length = 100, nullable = false, unique = true)
 	private String email;
@@ -65,22 +61,14 @@ public class AdminUserJpaEntity {
 
 	private LocalDateTime lastLoginAt;
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "admin_user_id", nullable = false)
-	private List<AdminUserPermissionJpaEntity> permissions = List.of();
-
-	public AdminUserJpaEntity(Role role, String name, String email, String password, String phoneNumber,
-		AdminUserStatus status, LocalDateTime lastLoginAt) {
-		this.role = role;
-		this.name = name;
+	public AdminUserJpaEntity(AdminUserRole adminUserRole, String nickname, String email, String password,
+		String phoneNumber, AdminUserStatus status, LocalDateTime lastLoginAt) {
+		this.adminUserRole = adminUserRole;
+		this.nickname = nickname;
 		this.email = email;
 		this.password = password;
 		this.phoneNumber = phoneNumber;
 		this.status = status;
 		this.lastLoginAt = lastLoginAt;
-	}
-
-	public void addAdminUserPermissionJpaEntity(AdminUserPermissionJpaEntity permission) {
-		this.permissions = List.of(permission);
 	}
 }

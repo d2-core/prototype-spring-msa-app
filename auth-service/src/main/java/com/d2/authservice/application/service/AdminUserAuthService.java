@@ -15,11 +15,11 @@ import com.d2.authservice.error.AdminUserErrorCodeImpl;
 import com.d2.authservice.model.domain.AdminUserLogin;
 import com.d2.authservice.model.dto.AdminUserDto;
 import com.d2.authservice.model.dto.TokenDto;
-import com.d2.authservice.model.enums.AdminUserPermission;
+import com.d2.authservice.model.enums.AdminUserRole;
 import com.d2.authservice.model.enums.AdminUserStatus;
 import com.d2.authservice.model.enums.SmsAuthenticationCategory;
 import com.d2.core.exception.ApiExceptionImpl;
-import com.d2.core.model.enums.Role;
+import com.d2.core.model.enums.TokenRole;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,15 +32,8 @@ public class AdminUserAuthService implements AdminUserAuthUseCase {
 	private final SmsVerificationPort smsVerificationPort;
 
 	@Override
-	public AdminUserLogin register(String name, String email, String password, String phoneNumber, String authCode) {
-		if (adminUserPort.existEmail(email)) {
-			throw new ApiExceptionImpl(AdminUserErrorCodeImpl.EXIST_EMAIL, "email: %s".formatted(email));
-		}
-
-		if (adminUserPort.existPhoneNumber(phoneNumber)) {
-			throw new ApiExceptionImpl(AdminUserErrorCodeImpl.EXIST_PHONE_NUMBER,
-				"phoneNumber: %s".formatted(phoneNumber));
-		}
+	public AdminUserLogin signup(AdminUserRole adminUserRole, String nickname, String email, String password,
+		String phoneNumber, String authCode) {
 
 		if (!smsVerificationPort.existSmsVerification(phoneNumber, authCode,
 			SmsAuthenticationCategory.ADMIN_USER_AUTH_SMS)) {
@@ -48,9 +41,14 @@ public class AdminUserAuthService implements AdminUserAuthUseCase {
 				"phoneNumber: %s, authCode: %s".formatted(phoneNumber, authCode));
 		}
 
+		if (adminUserPort.existEmailOrPhoneNumber(email, phoneNumber)) {
+			throw new ApiExceptionImpl(AdminUserErrorCodeImpl.EXIST_EMAIL_OR_PHONE_NUMBER,
+				"email: %s".formatted(email));
+		}
+
 		LocalDateTime lastLoginAt = LocalDateTime.now();
-		AdminUserDto adminUserDto = adminUserPort.register(name, Role.ADMIN, AdminUserPermission.READ, email, password,
-			phoneNumber, AdminUserStatus.REGISTERED, lastLoginAt);
+		AdminUserDto adminUserDto = adminUserPort.register(adminUserRole, nickname, email, password, phoneNumber,
+			AdminUserStatus.REGISTERED, lastLoginAt);
 
 		Map<String, Object> data = getAdminUserClaimData(adminUserDto);
 		TokenDto accessTokenDto = tokenPort.issueAccessToken(data);
@@ -70,7 +68,7 @@ public class AdminUserAuthService implements AdminUserAuthUseCase {
 				"email: %s, password: %s".formatted(email, password));
 		}
 
-		Map<String, Object> data = getAdminUserClaimData(adminUserDto);
+		Map<String, Object> data = getAdminUserClaimData(adminUserDto.getId());
 
 		TokenDto accessTokenDto = tokenPort.issueAccessToken(data);
 		TokenDto refreshTokenDto = tokenPort.issueRefreshToken(data);
@@ -78,10 +76,10 @@ public class AdminUserAuthService implements AdminUserAuthUseCase {
 		return AdminUserLogin.from(adminUserDto, accessTokenDto, refreshTokenDto);
 	}
 
-	public Map<String, Object> getAdminUserClaimData(AdminUserDto adminUserDto) {
+	public Map<String, Object> getAdminUserClaimData(Long adminUserId) {
 		return Map.of(
-			TokenConstant.ROLE, adminUserDto.getRole().name(),
-			TokenConstant.ID, String.valueOf(adminUserDto.getId())
+			TokenConstant.ROLE, TokenRole.ADMIN.name(),
+			TokenConstant.ID, String.valueOf(adminUserId)
 		);
 	}
 }

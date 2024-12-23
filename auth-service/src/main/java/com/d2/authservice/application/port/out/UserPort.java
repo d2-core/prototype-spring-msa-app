@@ -8,13 +8,10 @@ import com.d2.authservice.model.enums.SocialCategory;
 import com.d2.authservice.model.enums.UserSortStandard;
 import com.d2.authservice.model.enums.UserStatus;
 import com.d2.core.model.dto.SortDto;
-import com.d2.core.model.enums.Role;
 
 public interface UserPort {
-	UserDto upsertBySocialProfileId(String socialProfileId, Role role, String nickname, String email,
-		String phoneNumber,
-		UserStatus userStatus,
-		LocalDateTime lastLoginAt, SocialCategory socialCategory);
+	UserDto upsertBySocialProfileId(String socialProfileId, String nickname, String email, String phoneNumber,
+		UserStatus userStatus, LocalDateTime lastLoginAt, SocialCategory socialCategory);
 
 	Boolean exitSocialId(String socialId);
 

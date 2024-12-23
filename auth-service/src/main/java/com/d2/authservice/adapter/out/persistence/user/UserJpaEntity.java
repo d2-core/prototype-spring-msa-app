@@ -7,7 +7,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.d2.authservice.model.enums.UserStatus;
-import com.d2.core.model.enums.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,10 +33,6 @@ public class UserJpaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@Column(length = 50, nullable = false)
-	@Enumerated(EnumType.STRING)
-	private Role role;
 
 	@Column(length = 50, nullable = false)
 	private String nickname;
@@ -70,9 +65,8 @@ public class UserJpaEntity {
 		}
 	}
 
-	public UserJpaEntity(Role role, String nickname, String email, String phoneNumber, UserStatus status,
+	public UserJpaEntity(String nickname, String email, String phoneNumber, UserStatus status,
 		LocalDateTime lastLoginAt) {
-		this.role = role;
 		this.nickname = nickname;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
@@ -80,9 +74,8 @@ public class UserJpaEntity {
 		this.lastLoginAt = lastLoginAt;
 	}
 
-	public UserJpaEntity update(Role role, String nickname, String email, String phoneNumber, UserStatus status,
+	public UserJpaEntity update(String nickname, String email, String phoneNumber, UserStatus status,
 		LocalDateTime lastLoginAt) {
-		this.role = role;
 		this.nickname = nickname;
 		this.email = email;
 		this.phoneNumber = phoneNumber;

@@ -19,12 +19,14 @@ public class AdminUserAuthController {
 	private final AdminUserAuthUseCase adminUserAuthUseCase;
 
 	@PostMapping("auth/v1/admin-users")
-	public API<AdminUserLogin> signUp(@Valid @RequestBody AdminUserRegisterRequest adminUserRegisterRequest
+	public API<AdminUserLogin> signup(@Valid @RequestBody AdminUserRegisterRequest adminUserRegisterRequest
 	) {
 		return API.OK(
-			adminUserAuthUseCase.register(adminUserRegisterRequest.getName(), adminUserRegisterRequest.getEmail(),
+			adminUserAuthUseCase.signup(adminUserRegisterRequest.getAdminUserRole(),
+				adminUserRegisterRequest.getNickname(), adminUserRegisterRequest.getEmail(),
 				adminUserRegisterRequest.getPassword(), adminUserRegisterRequest.getPhoneNumber(),
 				adminUserRegisterRequest.getAuthCode()));
+
 	}
 
 	@PostMapping("auth/v1/admin-users/login")

@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -20,6 +19,8 @@ public class QAdminUserJpaEntity extends EntityPathBase<AdminUserJpaEntity> {
 
     public static final QAdminUserJpaEntity adminUserJpaEntity = new QAdminUserJpaEntity("adminUserJpaEntity");
 
+    public final EnumPath<com.d2.authservice.model.enums.AdminUserRole> adminUserRole = createEnum("adminUserRole", com.d2.authservice.model.enums.AdminUserRole.class);
+
     public final StringPath email = createString("email");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
@@ -28,17 +29,13 @@ public class QAdminUserJpaEntity extends EntityPathBase<AdminUserJpaEntity> {
 
     public final DateTimePath<java.time.LocalDateTime> modifiedAt = createDateTime("modifiedAt", java.time.LocalDateTime.class);
 
-    public final StringPath name = createString("name");
+    public final StringPath nickname = createString("nickname");
 
     public final StringPath password = createString("password");
-
-    public final ListPath<AdminUserPermissionJpaEntity, QAdminUserPermissionJpaEntity> permissions = this.<AdminUserPermissionJpaEntity, QAdminUserPermissionJpaEntity>createList("permissions", AdminUserPermissionJpaEntity.class, QAdminUserPermissionJpaEntity.class, PathInits.DIRECT2);
 
     public final StringPath phoneNumber = createString("phoneNumber");
 
     public final DateTimePath<java.time.LocalDateTime> registeredAt = createDateTime("registeredAt", java.time.LocalDateTime.class);
-
-    public final EnumPath<com.d2.core.model.enums.Role> role = createEnum("role", com.d2.core.model.enums.Role.class);
 
     public final EnumPath<com.d2.authservice.model.enums.AdminUserStatus> status = createEnum("status", com.d2.authservice.model.enums.AdminUserStatus.class);
 

@@ -17,7 +17,7 @@ import com.d2.authservice.model.dto.TokenDto;
 import com.d2.authservice.model.dto.UserDto;
 import com.d2.authservice.model.enums.SocialCategory;
 import com.d2.authservice.model.enums.UserStatus;
-import com.d2.core.model.enums.Role;
+import com.d2.core.model.enums.TokenRole;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +36,6 @@ public class UserAuthService implements UserAuthUseCase {
 		String socialProfileId = String.valueOf(kakaoUserInfoDto.getId());
 		UserDto userDto = userPort.upsertBySocialProfileId(
 			socialProfileId,
-			Role.APP,
 			kakaoUserInfoDto.getKakaoAccount().getProfile().getNickname(),
 			kakaoUserInfoDto.getKakaoAccount().getEmail(),
 			kakaoUserInfoDto.getKakaoAccount().getPhoneNumber(),
@@ -45,7 +44,7 @@ public class UserAuthService implements UserAuthUseCase {
 			SocialCategory.KAKAO);
 
 		Map<String, Object> data = Map.of(
-			TokenConstant.ROLE, String.valueOf(userDto.getRole()),
+			TokenConstant.ROLE, TokenRole.APP.name(),
 			TokenConstant.ID, String.valueOf(userDto.getId())
 		);
 

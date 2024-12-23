@@ -1,7 +1,10 @@
 package com.d2.authservice.model.request;
 
+import com.d2.authservice.model.enums.AdminUserRole;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,8 +12,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdminUserRegisterRequest {
 
+	@NotNull
+	private AdminUserRole adminUserRole;
+
 	@NotEmpty
-	private String name;
+	private String nickname;
 
 	@Email
 	private String email;

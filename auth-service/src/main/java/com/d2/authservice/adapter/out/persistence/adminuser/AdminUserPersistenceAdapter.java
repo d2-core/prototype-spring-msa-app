@@ -1,7 +1,6 @@
 package com.d2.authservice.adapter.out.persistence.adminuser;
 
 import static com.d2.authservice.adapter.out.persistence.adminuser.QAdminUserJpaEntity.*;
-import static com.d2.authservice.adapter.out.persistence.adminuser.QAdminUserPermissionJpaEntity.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,14 +9,13 @@ import org.springframework.stereotype.Component;
 
 import com.d2.authservice.application.port.out.AdminUserPort;
 import com.d2.authservice.model.dto.AdminUserDto;
-import com.d2.authservice.model.enums.AdminUserPermission;
+import com.d2.authservice.model.enums.AdminUserRole;
 import com.d2.authservice.model.enums.AdminUserSortStandard;
 import com.d2.authservice.model.enums.AdminUserStatus;
 import com.d2.core.constant.PagingConstant;
 import com.d2.core.error.ErrorCodeImpl;
 import com.d2.core.exception.ApiExceptionImpl;
 import com.d2.core.model.dto.SortDto;
-import com.d2.core.model.enums.Role;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -31,52 +29,30 @@ import lombok.RequiredArgsConstructor;
 public class AdminUserPersistenceAdapter implements AdminUserPort {
 	private final JPQLQueryFactory queryFactory;
 	private final AdminUserJpaRepository adminUserJpaRepository;
-	private final AdminUserPermissionJpaRepository adminUserPermissionJpaRepository;
 
-	@Override
-	public Boolean existEmail(String email) {
+	public Boolean existEmailOrPhoneNumber(String email, String phoneNumber) {
 		QAdminUserJpaEntity adminUserJpaEntity = QAdminUserJpaEntity.adminUserJpaEntity;
 		Integer fetchOne = queryFactory
 			.selectOne()
 			.from(adminUserJpaEntity)
-			.where(adminUserJpaEntity.email.eq(email))
-			.fetchFirst();
+			.where(adminUserJpaEntity.email.eq(email).or(adminUserJpaEntity.phoneNumber.eq(phoneNumber)))
+			.fetchOne();
 
 		return fetchOne != null;
 	}
 
 	@Override
-	public Boolean existPhoneNumber(String phoneNumber) {
-		QAdminUserJpaEntity adminUserJpaEntity = QAdminUserJpaEntity.adminUserJpaEntity;
-		Integer fetchOne = queryFactory
-			.selectOne()
-			.from(adminUserJpaEntity)
-			.where(adminUserJpaEntity.phoneNumber.eq(phoneNumber))
-			.fetchFirst();
-
-		return fetchOne != null;
-	}
-
-	@Override
-	public AdminUserDto register(String name, Role role, AdminUserPermission permission, String email, String password,
+	public AdminUserDto register(AdminUserRole adminUserRole, String nickname, String email, String password,
 		String phoneNumber, AdminUserStatus status, LocalDateTime lastLoginAt) {
 		AdminUserJpaEntity adminUser = adminUserJpaRepository.save(new AdminUserJpaEntity(
-			role,
-			name,
+			adminUserRole,
+			nickname,
 			email,
 			password,
 			phoneNumber,
 			status,
 			lastLoginAt
 		));
-
-		AdminUserPermissionJpaEntity adminUserPermissionJpaEntity = adminUserPermissionJpaRepository.save(
-			new AdminUserPermissionJpaEntity(
-				adminUser.getId(),
-				permission
-			));
-
-		adminUser.addAdminUserPermissionJpaEntity(adminUserPermissionJpaEntity);
 
 		return AdminUserDto.from(adminUser);
 	}
@@ -85,8 +61,6 @@ public class AdminUserPersistenceAdapter implements AdminUserPort {
 	public AdminUserDto getAdminUserByEmailAndPasswordWithThrow(String email, String password) {
 		AdminUserJpaEntity entity = queryFactory
 			.selectFrom(adminUserJpaEntity)
-			.leftJoin(adminUserPermissionJpaEntity)
-			.on(adminUserPermissionJpaEntity.adminUserId.eq(adminUserJpaEntity.id))
 			.fetchJoin()
 			.where(adminUserJpaEntity.email.eq(email), adminUserJpaEntity.password.eq(password))
 			.fetchFirst();
@@ -133,8 +107,6 @@ public class AdminUserPersistenceAdapter implements AdminUserPort {
 			return queryFactory
 				.selectFrom(adminUserJpaEntity)
 				.where(adminUserJpaEntity.id.in(ids))
-				.leftJoin(adminUserPermissionJpaEntity)
-				.on(adminUserPermissionJpaEntity.adminUserId.eq(adminUserJpaEntity.id))
 				.fetch()
 				.stream()
 				.map(AdminUserDto::from)
@@ -144,22 +116,11 @@ public class AdminUserPersistenceAdapter implements AdminUserPort {
 			return queryFactory
 				.selectFrom(adminUserJpaEntity)
 				.orderBy(orderSpecifiers)
-				.leftJoin(adminUserPermissionJpaEntity)
-				.on(adminUserPermissionJpaEntity.adminUserId.eq(adminUserJpaEntity.id))
 				.fetch()
 				.stream()
 				.map(AdminUserDto::from)
 				.toList();
 		}
-	}
-
-	@Override
-	public List<AdminUserPermission> getAdminUserPermissions(Long adminUserId) {
-		return queryFactory
-			.select(adminUserPermissionJpaEntity.permission)
-			.from(adminUserPermissionJpaEntity)
-			.where(adminUserPermissionJpaEntity.adminUserId.eq(adminUserId))
-			.fetch();
 	}
 
 	public BooleanBuilder createUserListSearchBuilder(String email, String nickname, String phoneNumber) {
@@ -169,7 +130,7 @@ public class AdminUserPersistenceAdapter implements AdminUserPort {
 		}
 
 		if (!StringUtils.isNullOrEmpty(nickname)) {
-			builder.and(adminUserJpaEntity.name.containsIgnoreCase(nickname));
+			builder.and(adminUserJpaEntity.nickname.containsIgnoreCase(nickname));
 		}
 
 		if (!StringUtils.isNullOrEmpty(phoneNumber)) {

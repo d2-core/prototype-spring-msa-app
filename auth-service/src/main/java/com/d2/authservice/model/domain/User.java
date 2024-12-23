@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import com.d2.authservice.model.dto.UserDto;
 import com.d2.authservice.model.enums.UserStatus;
-import com.d2.core.model.enums.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,8 +12,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class User {
 	private final Long id;
-
-	private final Role role;
 
 	private final String nickname;
 
@@ -33,7 +30,6 @@ public class User {
 	public static User from(UserDto userDto) {
 		return new User(
 			userDto.getId(),
-			userDto.getRole(),
 			userDto.getNickname(),
 			userDto.getEmail(),
 			userDto.getPhoneNumber(),
