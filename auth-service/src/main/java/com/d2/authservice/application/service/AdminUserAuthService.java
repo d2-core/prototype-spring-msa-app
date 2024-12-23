@@ -50,7 +50,7 @@ public class AdminUserAuthService implements AdminUserAuthUseCase {
 		AdminUserDto adminUserDto = adminUserPort.register(adminUserRole, nickname, email, password, phoneNumber,
 			AdminUserStatus.REGISTERED, lastLoginAt);
 
-		Map<String, Object> data = getAdminUserClaimData(adminUserDto);
+		Map<String, Object> data = getAdminUserClaimData(adminUserDto.getId());
 		TokenDto accessTokenDto = tokenPort.issueAccessToken(data);
 
 		TokenDto refreshTokenDto = tokenPort.issueRefreshToken(data);
