@@ -61,7 +61,6 @@ public class AdminUserPersistenceAdapter implements AdminUserPort {
 	public AdminUserDto getAdminUserByEmailAndPasswordWithThrow(String email, String password) {
 		AdminUserJpaEntity entity = queryFactory
 			.selectFrom(adminUserJpaEntity)
-			.fetchJoin()
 			.where(adminUserJpaEntity.email.eq(email), adminUserJpaEntity.password.eq(password))
 			.fetchFirst();
 		if (entity != null) {

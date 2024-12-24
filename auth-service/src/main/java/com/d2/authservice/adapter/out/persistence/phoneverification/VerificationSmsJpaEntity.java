@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.d2.authservice.model.enums.SmsAuthenticationCategory;
+import com.d2.authservice.model.enums.VerificationSmsCategory;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,12 +21,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Table(name = "sms_verifications")
+@Table(name = "verification_sms")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class SmsVerificationJpaEntity {
+public class VerificationSmsJpaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -35,26 +35,26 @@ public class SmsVerificationJpaEntity {
 	private String phoneNumber;
 
 	@Column(length = 50, nullable = false)
-	private String smsAuthCode;
+	private String authCode;
 
 	@Column(length = 50, nullable = false)
 	@Enumerated(EnumType.STRING)
-	private SmsAuthenticationCategory category;
+	private VerificationSmsCategory category;
 
 	private Boolean verified;
 
 	@CreatedDate
 	private LocalDateTime createdAt;
 
-	public SmsVerificationJpaEntity(String phoneNumber, String smsAuthCode, SmsAuthenticationCategory category,
+	public VerificationSmsJpaEntity(String phoneNumber, String authCode, VerificationSmsCategory category,
 		Boolean verified) {
 		this.phoneNumber = phoneNumber;
-		this.smsAuthCode = smsAuthCode;
+		this.authCode = authCode;
 		this.category = category;
 		this.verified = verified;
 	}
 
-	public SmsVerificationJpaEntity updateVerified(Boolean verified) {
+	public VerificationSmsJpaEntity updateVerified(Boolean verified) {
 		this.verified = verified;
 		return this;
 	}

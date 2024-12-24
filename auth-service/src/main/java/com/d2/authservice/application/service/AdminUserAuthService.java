@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.d2.authservice.application.port.in.AdminUserAuthUseCase;
 import com.d2.authservice.application.port.out.AdminUserPort;
-import com.d2.authservice.application.port.out.SmsVerificationPort;
 import com.d2.authservice.application.port.out.TokenPort;
+import com.d2.authservice.application.port.out.VerificationSmsPort;
 import com.d2.authservice.constant.TokenConstant;
 import com.d2.authservice.error.AdminUserErrorCodeImpl;
 import com.d2.authservice.model.domain.AdminUserLogin;
@@ -17,7 +17,6 @@ import com.d2.authservice.model.dto.AdminUserDto;
 import com.d2.authservice.model.dto.TokenDto;
 import com.d2.authservice.model.enums.AdminUserRole;
 import com.d2.authservice.model.enums.AdminUserStatus;
-import com.d2.authservice.model.enums.SmsAuthenticationCategory;
 import com.d2.core.exception.ApiExceptionImpl;
 import com.d2.core.model.enums.TokenRole;
 
@@ -29,14 +28,13 @@ import lombok.RequiredArgsConstructor;
 public class AdminUserAuthService implements AdminUserAuthUseCase {
 	private final TokenPort tokenPort;
 	private final AdminUserPort adminUserPort;
-	private final SmsVerificationPort smsVerificationPort;
+	private final VerificationSmsPort verificationSmsPort;
 
 	@Override
 	public AdminUserLogin signup(AdminUserRole adminUserRole, String nickname, String email, String password,
-		String phoneNumber, String authCode) {
+		String phoneNumber, String authCode, Long checkAuthCodeId) {
 
-		if (!smsVerificationPort.existSmsVerification(phoneNumber, authCode,
-			SmsAuthenticationCategory.ADMIN_USER_AUTH_SMS)) {
+		if (!verificationSmsPort.verifySms(checkAuthCodeId)) {
 			throw new ApiExceptionImpl(AdminUserErrorCodeImpl.NOT_COMPLETED_PHONE_AUTH,
 				"phoneNumber: %s, authCode: %s".formatted(phoneNumber, authCode));
 		}

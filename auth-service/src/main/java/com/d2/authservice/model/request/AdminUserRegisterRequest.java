@@ -29,4 +29,7 @@ public class AdminUserRegisterRequest {
 
 	@NotEmpty
 	private String authCode;
+
+	@NotNull
+	private Long checkAuthCodeId;
 }

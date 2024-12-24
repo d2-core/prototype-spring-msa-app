@@ -1,16 +1,12 @@
 package com.d2.authservice.model.request;
 
-import java.time.LocalDateTime;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class CheckedSmsAuthCodeRequest {
+public class CreateSmsVerificationAuthCodeRequest {
+	@NotBlank
 	private String phoneNumber;
-
-	private String smsAuthCode;
-
-	private LocalDateTime requestDate;
 }
