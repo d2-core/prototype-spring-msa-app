@@ -2,6 +2,7 @@ package com.d2.authservice.adapter.in.web;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.d2.authservice.application.port.in.AdminUserAuthUseCase;
@@ -15,21 +16,22 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("api/auth")
 public class AdminUserAuthController {
 	private final AdminUserAuthUseCase adminUserAuthUseCase;
 
-	@PostMapping("auth/v1/admin-users")
+	@PostMapping("v1/admin-users")
 	public API<AdminUserLogin> signup(@Valid @RequestBody AdminUserRegisterRequest adminUserRegisterRequest
 	) {
 		return API.OK(
 			adminUserAuthUseCase.signup(adminUserRegisterRequest.getAdminUserRole(),
 				adminUserRegisterRequest.getNickname(), adminUserRegisterRequest.getEmail(),
 				adminUserRegisterRequest.getPassword(), adminUserRegisterRequest.getPhoneNumber(),
-				adminUserRegisterRequest.getAuthCode()));
+				adminUserRegisterRequest.getAuthCode(), adminUserRegisterRequest.getCheckAuthCodeId()));
 
 	}
 
-	@PostMapping("auth/v1/admin-users/login")
+	@PostMapping("v1/admin-users/login")
 	public API<AdminUserLogin> login(@Valid @RequestBody AdminUserLoginRequest adminUserLoginRequest) {
 		return API.OK(
 			adminUserAuthUseCase.login(adminUserLoginRequest.getEmail(), adminUserLoginRequest.getPassword()));

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,15 +25,16 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("api/auth")
 public class FindAdminUserController {
 	private final FindAdminUserUseCase findAdminUserUseCase;
 
-	@GetMapping("auth/v1/admin-users/{adminUserId}/auth")
+	@GetMapping("v1/admin-users/{adminUserId}/auth")
 	public API<AdminUserAuth> getAdminUserAuth(@PathVariable Long adminUserId) {
 		return API.OK(findAdminUserUseCase.getAdminUserAuth(adminUserId));
 	}
 
-	@GetMapping("auth/v1/admin-users/me")
+	@GetMapping("v1/admin-users/me")
 	public API<AdminUser> getAdminUser(@AdminUserAuthInjection AdminUserAuth adminUserAuth) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			return API.OK(findAdminUserUseCase.getAdminUser(adminUserAuth.getAdminUserId()));
@@ -43,12 +45,12 @@ public class FindAdminUserController {
 		}
 	}
 
-	@GetMapping("auth/v1/admin-users/{adminUserId}")
+	@GetMapping("v1/admin-users/{adminUserId}")
 	public API<AdminUser> getAdminUserByAdminUserId(@PathVariable Long adminUserId) {
 		return API.OK(findAdminUserUseCase.getAdminUser(adminUserId));
 	}
 
-	@GetMapping("auth/v1/admin-users")
+	@GetMapping("v1/admin-users")
 	public API<List<AdminUser>> getAdminUserList(
 		@RequestParam(required = false) String email,
 		@RequestParam(required = false) String name,

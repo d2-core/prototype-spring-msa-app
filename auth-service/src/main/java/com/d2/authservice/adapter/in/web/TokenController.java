@@ -3,6 +3,7 @@ package com.d2.authservice.adapter.in.web;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.d2.authservice.application.port.in.TokenUseCase;
@@ -16,16 +17,17 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("api/auth")
 public class TokenController {
 
 	private final TokenUseCase tokenUseCase;
 
-	@PostMapping("auth/v1/tokens/validate")
+	@PostMapping("v1/tokens/validate")
 	public API<TokenClaims> validateTokenForUser(@RequestBody ValidateTokenRequest validateTokenRequest) {
 		return API.OK(tokenUseCase.validateToken(validateTokenRequest.getAccessToken()));
 	}
 
-	@PostMapping("auth/v1/tokens/refresh")
+	@PostMapping("v1/tokens/refresh")
 	public API<Token> refreshToken(@RequestHeader(value = HeaderConstant.X_D2_REFRESH) String refreshToken) {
 		return API.OK(tokenUseCase.refreshToken(refreshToken));
 	}

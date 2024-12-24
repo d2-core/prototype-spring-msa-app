@@ -2,6 +2,7 @@ package com.d2.authservice.adapter.in.web;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.d2.authservice.application.port.in.UserAuthUseCase;
@@ -13,10 +14,11 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("api/auth")
 public class UserAuthController {
 	private final UserAuthUseCase userAuthUseCase;
 
-	@PostMapping("auth/v1/users/login-with-kakao")
+	@PostMapping("v1/users/login-with-kakao")
 	public API<UserLogin> loginWithKakao(@RequestBody UserKaKaoLoginRequest kaKaoLoginRequest) {
 		return API.OK(userAuthUseCase.loginWithKakao(kaKaoLoginRequest.getCode()));
 	}

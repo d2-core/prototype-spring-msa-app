@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,15 +25,16 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("api/auth")
 public class FindUserController {
 	private final FindUserUseCase findUserUseCase;
 
-	@GetMapping("auth/v1/users/{userId}/auth")
+	@GetMapping("v1/users/{userId}/auth")
 	public API<UserAuth> getUserAuth(@PathVariable Long userId) {
 		return API.OK(findUserUseCase.getUserAuth(userId));
 	}
 
-	@GetMapping("auth/v1/users/me")
+	@GetMapping("v1/users/me")
 	public API<User> getUser(@UserAuthInjection UserAuth userAuth) {
 		if (!userAuth.getUserId().equals(AuthConstant.NOT_EXIST)) {
 			return API.OK(findUserUseCase.getUser(userAuth.getUserId()));
@@ -41,12 +43,12 @@ public class FindUserController {
 		}
 	}
 
-	@GetMapping("auth/v1/users/{userId}")
+	@GetMapping("v1/users/{userId}")
 	public API<User> getUserByUserId(@PathVariable Long userId) {
 		return API.OK(findUserUseCase.getUser(userId));
 	}
 
-	@GetMapping("auth/v1/users")
+	@GetMapping("v1/users")
 	public API<List<User>> getUserList(
 		@RequestParam(required = false) String email,
 		@RequestParam(required = false) String nickname,
