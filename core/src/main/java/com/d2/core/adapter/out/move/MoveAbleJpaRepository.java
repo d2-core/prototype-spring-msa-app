@@ -5,12 +5,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
 import com.d2.core.model.domain.MoveOrder;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Component
 public class MoveAbleJpaRepository<T extends MoveAble> implements MoveAbleRepository<T> {
 	private final JpaRepository<T, Long> jpaRepository;
 
@@ -34,7 +36,7 @@ public class MoveAbleJpaRepository<T extends MoveAble> implements MoveAbleReposi
 
 		return jpaRepository.saveAll(entities)
 			.stream()
-			.map(e -> MoveOrder.from(e.getId(), e.getOrder()))
+			.map(e -> MoveOrder.from(e.getId(), e.getOrders()))
 			.collect(Collectors.toList());
 	}
 }

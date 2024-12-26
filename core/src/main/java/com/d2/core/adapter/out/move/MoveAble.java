@@ -3,11 +3,11 @@ package com.d2.core.adapter.out.move;
 public interface MoveAble {
 	Long getId();
 
-	Long getOrder();
+	Long getOrders();
 
-	void setOrder(Long order);
+	void setOrders(Long order);
 
 	default void move(Long newOrder) {
-		setOrder(newOrder);
+		setOrders(newOrder);
 	}
 }
