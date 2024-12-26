@@ -11,7 +11,7 @@ public class CourseCategory {
 	private final Long id;
 	private final String name;
 	private final String description;
-	private final Integer order;
+	private final Long order;
 
 	public static CourseCategory from(StaticJpaEntity entity) {
 		return new CourseCategory(
