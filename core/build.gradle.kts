@@ -6,4 +6,5 @@ jar.enabled = true
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.691")
 }
