@@ -18,7 +18,7 @@ public class CourseLevel {
 			entity.getId(),
 			entity.getName(),
 			entity.getDescription(),
-			entity.getOrder()
+			entity.getOrders()
 		);
 	}
 }

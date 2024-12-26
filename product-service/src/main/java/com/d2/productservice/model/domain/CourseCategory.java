@@ -18,7 +18,7 @@ public class CourseCategory {
 			entity.getId(),
 			entity.getName(),
 			entity.getDescription(),
-			entity.getOrder()
+			entity.getOrders()
 		);
 	}
 }

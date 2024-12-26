@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Table(name = "course_categories")
+@Table(name = "statics")
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,7 +45,7 @@ public class StaticJpaEntity implements MoveAble {
 	private String description;
 
 	@Setter
-	private Long order;
+	private Long orders;
 
 	@CreatedDate
 	private LocalDateTime createdAt;

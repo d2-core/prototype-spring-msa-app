@@ -17,7 +17,9 @@ public enum ErrorCodeImpl implements ErrorCode {
 	INVALID(HttpStatus.BAD_REQUEST.value(), "G-007", "invalid value", "유효하지 않은 값이 입력되었습니다. 다시 확인해주세요."),
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED.value(), "G-008", "method not allowed", "잘못된 요청입니다."),
 	UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), "G-009", "unsupported media type",
-		"지원되지 않는 미디어 타입입니다."),
+		"지원되지 않 는 미디어 타입입니다."),
+	BAG_GATEWAY(HttpStatus.BAD_GATEWAY.value(), "G-010", "bad gateway",
+		"외부 서비스에서 예상하지 못한 오류가 발생하여 요청을 처리할 수 없습니다."),
 	;
 
 	private final Integer httpCode;
