@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class R2ExternalSystem implements StoragePort {
 	private final AmazonS3 amazonS3;
 
-	@Value("${aws.s3.bucketName}")
+	@Value("${aws.s3.bucketName:null}")
 	private String bucketName;
 
 	@Override
@@ -43,6 +43,9 @@ public class R2ExternalSystem implements StoragePort {
 	}
 
 	private String uploadFile(MultipartFile file) {
+		if (bucketName == null) {
+			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "r2 bucket is null");
+		}
 		String uniqueFileKey = LocalDate.now().format(DateTimeFormatter.ISO_DATE) + "-" + UUID.randomUUID();
 
 		try (InputStream inputStream = file.getInputStream()) {
