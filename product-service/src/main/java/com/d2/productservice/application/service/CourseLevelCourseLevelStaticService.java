@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class CourseLevelCourseLevelStaticService implements CourseLevelStaticUseCase {
 	private final StaticJpaRepository staticJpaRepository;
-	private final MoveAbleRepository<StaticJpaEntity> moveAbleRepository;
+	private final MoveAbleRepository moveAbleRepository;
 
 	@Transactional
 	@Override
@@ -51,7 +51,7 @@ public class CourseLevelCourseLevelStaticService implements CourseLevelStaticUse
 	@Transactional
 	@Override
 	public List<MoveOrder> moveCourseLevel(List<MoveOrder> moveOrders) {
-		return moveAbleRepository.move(moveOrders);
+		return moveAbleRepository.move(moveOrders, StaticJpaEntity.class);
 	}
 
 	@Transactional(readOnly = true)
