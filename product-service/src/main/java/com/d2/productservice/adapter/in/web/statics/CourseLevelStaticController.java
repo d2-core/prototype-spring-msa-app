@@ -1,6 +1,7 @@
 package com.d2.productservice.adapter.in.web.statics;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +18,10 @@ import com.d2.core.exception.ApiExceptionImpl;
 import com.d2.core.model.domain.AdminUserAuth;
 import com.d2.core.model.domain.MoveOrder;
 import com.d2.core.resolver.AdminUserAuthInjection;
-import com.d2.productservice.application.port.in.CourseLevelStaticUseCase;
-import com.d2.productservice.model.domain.CourseLevel;
+import com.d2.productservice.application.port.in.CourseStaticUseCase;
+import com.d2.productservice.model.domain.CourseCategory;
+import com.d2.productservice.model.dto.StaticDto;
+import com.d2.productservice.model.enums.StaticCategory;
 import com.d2.productservice.model.request.StaticMoveRequest;
 import com.d2.productservice.model.request.StaticUpsertRequest;
 
@@ -28,15 +31,18 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("api/product")
 public class CourseLevelStaticController {
-	private final CourseLevelStaticUseCase courseLevelStaticUseCase;
+	private final CourseStaticUseCase courseStaticUseCase;
 
-	@PostMapping("v1/statics/course-levels")
-	public API<CourseLevel> registerCourseLevel(@AdminUserAuthInjection AdminUserAuth adminUserAuth,
+	@PostMapping("v1/statics/course/levels")
+	public API<CourseCategory> register(
+		@AdminUserAuthInjection AdminUserAuth adminUserAuth,
 		@RequestBody StaticUpsertRequest staticUpsertRequest) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
-			return API.OK(courseLevelStaticUseCase.upsertCourseLevel(null,
+			StaticDto staticDto = courseStaticUseCase.upsertStatic(StaticCategory.COURSE_LEVEL,
+				null,
 				staticUpsertRequest.getName(),
-				staticUpsertRequest.getDescription()));
+				staticUpsertRequest.getDescription());
+			return API.OK(CourseCategory.from(staticDto));
 		} else {
 			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
 				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
@@ -44,11 +50,12 @@ public class CourseLevelStaticController {
 		}
 	}
 
-	@PostMapping("v1/statics/course-levels/move")
-	public API<List<MoveOrder>> moveCourseLevel(@AdminUserAuthInjection AdminUserAuth adminUserAuth,
+	@PostMapping("v1/statics/course/levels/move")
+	public API<List<MoveOrder>> move(
+		@AdminUserAuthInjection AdminUserAuth adminUserAuth,
 		@RequestBody StaticMoveRequest staticMoveRequest) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
-			return API.OK(courseLevelStaticUseCase.moveCourseLevel(staticMoveRequest.getMoveOrders()));
+			return API.OK(courseStaticUseCase.moveStatic(staticMoveRequest.getMoveOrders()));
 		} else {
 			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
 				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
@@ -56,12 +63,15 @@ public class CourseLevelStaticController {
 		}
 	}
 
-	@PutMapping("v1/statics/course-levels/{courseLevelId}")
-	public API<CourseLevel> modifyCourseLevel(@AdminUserAuthInjection AdminUserAuth adminUserAuth,
-		@PathVariable Long courseLevelId, @RequestBody StaticUpsertRequest staticUpsertRequest) {
+	@PutMapping("v1/statics/course/levels/{courseLevelId}")
+	public API<CourseCategory> modify(
+		@AdminUserAuthInjection AdminUserAuth adminUserAuth,
+		@PathVariable Long courseLevelId,
+		@RequestBody StaticUpsertRequest staticUpsertRequest) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
-			return API.OK(courseLevelStaticUseCase.upsertCourseLevel(courseLevelId, staticUpsertRequest.getName(),
-				staticUpsertRequest.getDescription()));
+			StaticDto staticDto = courseStaticUseCase.upsertStatic(StaticCategory.COURSE_LEVEL, courseLevelId,
+				staticUpsertRequest.getName(), staticUpsertRequest.getDescription());
+			return API.OK(CourseCategory.from(staticDto));
 		} else {
 			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
 				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
@@ -69,13 +79,17 @@ public class CourseLevelStaticController {
 		}
 	}
 
-	@GetMapping("v1/statics/course-levels")
-	public API<List<CourseLevel>> getCourseLevelList() {
-		return API.OK(courseLevelStaticUseCase.getCourseLevelList());
+	@GetMapping("v1/statics/course/levels")
+	public API<List<CourseCategory>> getList(@AdminUserAuthInjection AdminUserAuth adminUserAuth) {
+
+		return API.OK(courseStaticUseCase.getStaticList(StaticCategory.COURSE_CATEGORY)
+			.stream().map(CourseCategory::from)
+			.collect(Collectors.toList()));
 	}
 
-	@GetMapping("v1/statics/course-levels/{courseLevelId}")
-	public API<CourseLevel> getCourseLevel(@PathVariable Long courseLevelId) {
-		return API.OK(courseLevelStaticUseCase.getCourseLevel(courseLevelId));
+	@GetMapping("v1/statics/course/levels/{courseLevelId}")
+	public API<CourseCategory> getDetail(@PathVariable Long courseLevelId) {
+		StaticDto staticDto = courseStaticUseCase.getStatic(courseLevelId);
+		return API.OK(CourseCategory.from(staticDto));
 	}
 }

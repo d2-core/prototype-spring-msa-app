@@ -28,9 +28,10 @@ public class StaticPersistenceAdapter implements StaticPort {
 		StaticJpaEntity entity;
 		if (id == null) {
 			Long orders = countAll(staticCategory) + 1;
+
 			entity = staticJpaRepository.save(
 				new StaticJpaEntity(
-					StaticCategory.COURSE_CATEGORY,
+					staticCategory,
 					name,
 					description,
 					orders
@@ -73,10 +74,9 @@ public class StaticPersistenceAdapter implements StaticPort {
 
 	public Long countAll(StaticCategory staticCategory) {
 		QStaticJpaEntity staticJpaEntity = QStaticJpaEntity.staticJpaEntity;
-		return jpqlQueryFactory.select(staticJpaEntity.id)
+		return jpqlQueryFactory.select(staticJpaEntity.count())
 			.from(staticJpaEntity)
 			.where(staticJpaEntity.staticCategory.eq(staticCategory))
-			.orderBy(staticJpaEntity.id.desc())
 			.fetchFirst();
 	}
 }
