@@ -1,7 +1,7 @@
 package com.d2.authservice.application.port.in;
 
 import com.d2.authservice.model.domain.AdminUserLogin;
-import com.d2.authservice.model.enums.AdminUserRole;
+import com.d2.core.model.enums.AdminUserRole;
 
 public interface AdminUserAuthUseCase {
 

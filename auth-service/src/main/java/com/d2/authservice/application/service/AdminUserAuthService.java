@@ -15,9 +15,9 @@ import com.d2.authservice.error.AdminUserErrorCodeImpl;
 import com.d2.authservice.model.domain.AdminUserLogin;
 import com.d2.authservice.model.dto.AdminUserDto;
 import com.d2.authservice.model.dto.TokenDto;
-import com.d2.authservice.model.enums.AdminUserRole;
 import com.d2.authservice.model.enums.AdminUserStatus;
 import com.d2.core.exception.ApiExceptionImpl;
+import com.d2.core.model.enums.AdminUserRole;
 import com.d2.core.model.enums.TokenRole;
 
 import lombok.RequiredArgsConstructor;

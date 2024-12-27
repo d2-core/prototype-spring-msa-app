@@ -11,6 +11,7 @@ import com.d2.authservice.model.dto.UserDto;
 import com.d2.authservice.model.enums.UserSortStandard;
 import com.d2.core.model.domain.UserAuth;
 import com.d2.core.model.dto.SortDto;
+import com.d2.core.model.enums.TokenRole;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +23,7 @@ public class FindUserService implements FindUserUseCase {
 
 	@Override
 	public UserAuth getUserAuth(Long userId) {
-		return new UserAuth(userId);
+		return new UserAuth(userId, TokenRole.APP);
 	}
 
 	@Override

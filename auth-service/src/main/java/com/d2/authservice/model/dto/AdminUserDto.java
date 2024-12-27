@@ -3,8 +3,8 @@ package com.d2.authservice.model.dto;
 import java.time.LocalDateTime;
 
 import com.d2.authservice.adapter.out.persistence.adminuser.AdminUserJpaEntity;
-import com.d2.authservice.model.enums.AdminUserRole;
 import com.d2.authservice.model.enums.AdminUserStatus;
+import com.d2.core.model.enums.AdminUserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

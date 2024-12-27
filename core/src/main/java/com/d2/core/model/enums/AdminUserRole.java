@@ -1,4 +1,4 @@
-package com.d2.authservice.model.enums;
+package com.d2.core.model.enums;
 
 import lombok.AllArgsConstructor;
 

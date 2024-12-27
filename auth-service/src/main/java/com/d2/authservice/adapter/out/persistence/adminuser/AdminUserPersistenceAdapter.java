@@ -8,17 +8,20 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.d2.authservice.application.port.out.AdminUserPort;
+import com.d2.authservice.model.dto.AdminUserAutoDto;
 import com.d2.authservice.model.dto.AdminUserDto;
-import com.d2.authservice.model.enums.AdminUserRole;
 import com.d2.authservice.model.enums.AdminUserSortStandard;
 import com.d2.authservice.model.enums.AdminUserStatus;
 import com.d2.core.constant.PagingConstant;
 import com.d2.core.error.ErrorCodeImpl;
 import com.d2.core.exception.ApiExceptionImpl;
 import com.d2.core.model.dto.SortDto;
+import com.d2.core.model.enums.AdminUserRole;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.util.StringUtils;
 import com.querydsl.jpa.JPQLQueryFactory;
 
@@ -68,6 +71,20 @@ public class AdminUserPersistenceAdapter implements AdminUserPort {
 		} else {
 			throw new ApiExceptionImpl(ErrorCodeImpl.NOT_FOUND, "email: %s, password: %s]".formatted(email, password));
 		}
+	}
+
+	@Override
+	public AdminUserAutoDto getAdminUserAuth(Long id) {
+		QAdminUserJpaEntity adminUserJpa = adminUserJpaEntity;
+		return queryFactory.select(
+				Projections.fields(
+					AdminUserAutoDto.class,
+					Expressions.asNumber(id).as("id"),
+					adminUserJpa.adminUserRole.as("adminUserRole")
+				))
+			.from(adminUserJpa)
+			.where(adminUserJpa.id.eq(id))
+			.fetchFirst();
 	}
 
 	@Override

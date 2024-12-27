@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import com.d2.authservice.application.port.in.FindAdminUserUseCase;
 import com.d2.authservice.application.port.out.AdminUserPort;
 import com.d2.authservice.model.domain.AdminUser;
+import com.d2.authservice.model.dto.AdminUserAutoDto;
 import com.d2.authservice.model.enums.AdminUserSortStandard;
 import com.d2.core.model.domain.AdminUserAuth;
 import com.d2.core.model.dto.SortDto;
+import com.d2.core.model.enums.TokenRole;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +23,8 @@ public class FindAdminUserService implements FindAdminUserUseCase {
 
 	@Override
 	public AdminUserAuth getAdminUserAuth(Long adminUserId) {
-		return new AdminUserAuth(adminUserId);
+		AdminUserAutoDto adminUserAutoDto = adminUserPort.getAdminUserAuth(adminUserId);
+		return new AdminUserAuth(adminUserAutoDto.getId(), TokenRole.ADMIN, adminUserAutoDto.getAdminUserRole());
 	}
 
 	@Override
