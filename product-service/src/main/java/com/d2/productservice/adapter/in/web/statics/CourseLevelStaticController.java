@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.d2.core.api.API;
 import com.d2.core.constant.AuthConstant;
 import com.d2.core.error.ErrorCodeImpl;
 import com.d2.core.exception.ApiExceptionImpl;
@@ -30,12 +31,12 @@ public class CourseLevelStaticController {
 	private final CourseLevelStaticUseCase courseLevelStaticUseCase;
 
 	@PostMapping("v1/statics/course-levels")
-	public CourseLevel registerCourseLevel(@AdminUserAuthInjection AdminUserAuth adminUserAuth,
+	public API<CourseLevel> registerCourseLevel(@AdminUserAuthInjection AdminUserAuth adminUserAuth,
 		@RequestBody StaticUpsertRequest staticUpsertRequest) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
-			return courseLevelStaticUseCase.upsertCourseLevel(null,
+			return API.OK(courseLevelStaticUseCase.upsertCourseLevel(null,
 				staticUpsertRequest.getName(),
-				staticUpsertRequest.getDescription());
+				staticUpsertRequest.getDescription()));
 		} else {
 			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
 				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
@@ -44,10 +45,10 @@ public class CourseLevelStaticController {
 	}
 
 	@PostMapping("v1/statics/course-levels/move")
-	public List<MoveOrder> moveCourseLevel(@AdminUserAuthInjection AdminUserAuth adminUserAuth,
+	public API<List<MoveOrder>> moveCourseLevel(@AdminUserAuthInjection AdminUserAuth adminUserAuth,
 		@RequestBody StaticMoveRequest staticMoveRequest) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
-			return courseLevelStaticUseCase.moveCourseLevel(staticMoveRequest.getMoveOrders());
+			return API.OK(courseLevelStaticUseCase.moveCourseLevel(staticMoveRequest.getMoveOrders()));
 		} else {
 			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
 				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
@@ -56,11 +57,11 @@ public class CourseLevelStaticController {
 	}
 
 	@PutMapping("v1/statics/course-levels/{courseLevelId}")
-	public CourseLevel modifyCourseLevel(@AdminUserAuthInjection AdminUserAuth adminUserAuth,
+	public API<CourseLevel> modifyCourseLevel(@AdminUserAuthInjection AdminUserAuth adminUserAuth,
 		@PathVariable Long courseLevelId, @RequestBody StaticUpsertRequest staticUpsertRequest) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
-			return courseLevelStaticUseCase.upsertCourseLevel(courseLevelId, staticUpsertRequest.getName(),
-				staticUpsertRequest.getDescription());
+			return API.OK(courseLevelStaticUseCase.upsertCourseLevel(courseLevelId, staticUpsertRequest.getName(),
+				staticUpsertRequest.getDescription()));
 		} else {
 			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
 				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
@@ -69,12 +70,12 @@ public class CourseLevelStaticController {
 	}
 
 	@GetMapping("v1/statics/course-levels")
-	public List<CourseLevel> getCourseLevelList() {
-		return courseLevelStaticUseCase.getCourseLevelList();
+	public API<List<CourseLevel>> getCourseLevelList() {
+		return API.OK(courseLevelStaticUseCase.getCourseLevelList());
 	}
 
 	@GetMapping("v1/statics/course-levels/{courseLevelId}")
-	public CourseLevel getCourseLevel(@PathVariable Long courseLevelId) {
-		return courseLevelStaticUseCase.getCourseLevel(courseLevelId);
+	public API<CourseLevel> getCourseLevel(@PathVariable Long courseLevelId) {
+		return API.OK(courseLevelStaticUseCase.getCourseLevel(courseLevelId));
 	}
 }

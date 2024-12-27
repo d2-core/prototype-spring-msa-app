@@ -53,10 +53,11 @@ public class StaticJpaEntity implements MoveAble {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	public StaticJpaEntity(StaticCategory staticCategory, String name, String description) {
+	public StaticJpaEntity(StaticCategory staticCategory, String name, String description, Long orders) {
 		this.staticCategory = staticCategory;
 		this.name = name;
 		this.description = description;
+		this.orders = orders;
 	}
 
 	public StaticJpaEntity modify(String name, String description) {

@@ -1,6 +1,6 @@
 package com.d2.productservice.model.domain;
 
-import com.d2.productservice.adapter.out.persistence.statics.StaticJpaEntity;
+import com.d2.productservice.model.dto.StaticDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,12 +13,12 @@ public class CourseCategory {
 	private final String description;
 	private final Long order;
 
-	public static CourseCategory from(StaticJpaEntity entity) {
+	public static CourseCategory from(StaticDto dto) {
 		return new CourseCategory(
-			entity.getId(),
-			entity.getName(),
-			entity.getDescription(),
-			entity.getOrders()
+			dto.getId(),
+			dto.getName(),
+			dto.getDescription(),
+			dto.getOrders()
 		);
 	}
 }

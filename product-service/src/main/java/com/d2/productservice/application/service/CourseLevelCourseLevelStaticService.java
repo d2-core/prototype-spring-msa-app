@@ -6,13 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.d2.core.adapter.out.move.MoveAbleRepository;
-import com.d2.core.error.ErrorCodeImpl;
-import com.d2.core.exception.ApiExceptionImpl;
 import com.d2.core.model.domain.MoveOrder;
-import com.d2.productservice.adapter.out.persistence.statics.StaticJpaEntity;
-import com.d2.productservice.adapter.out.persistence.statics.StaticJpaRepository;
 import com.d2.productservice.application.port.in.CourseLevelStaticUseCase;
+import com.d2.productservice.application.port.out.StaticPort;
 import com.d2.productservice.model.domain.CourseLevel;
 import com.d2.productservice.model.enums.StaticCategory;
 
@@ -21,43 +17,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class CourseLevelCourseLevelStaticService implements CourseLevelStaticUseCase {
-	private final StaticJpaRepository staticJpaRepository;
-	private final MoveAbleRepository moveAbleRepository;
+	private final StaticPort staticPort;
 
 	@Transactional
 	@Override
 	public CourseLevel upsertCourseLevel(Long id, String name, String description) {
-		StaticJpaEntity entity;
-		if (id == null) {
-			entity = staticJpaRepository.save(
-				new StaticJpaEntity(
-					StaticCategory.COURSE_LEVEL,
-					name,
-					description
-				)
-			);
-		} else {
-			entity = staticJpaRepository.findById(id)
-				.orElseThrow(() -> new ApiExceptionImpl(
-					ErrorCodeImpl.NOT_FOUND, "id: %s".formatted(id)));
-
-			entity = staticJpaRepository.save(
-				entity.modify(name, description));
-
-		}
-		return CourseLevel.from(entity);
+		return CourseLevel.from(staticPort.upsert(StaticCategory.COURSE_LEVEL, id, name, description));
 	}
 
 	@Transactional
 	@Override
 	public List<MoveOrder> moveCourseLevel(List<MoveOrder> moveOrders) {
-		return moveAbleRepository.move(moveOrders, StaticJpaEntity.class);
+		return staticPort.move(moveOrders);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public List<CourseLevel> getCourseLevelList() {
-		return staticJpaRepository.findAll()
+		return staticPort.getStaticList(StaticCategory.COURSE_LEVEL)
 			.stream()
 			.map(CourseLevel::from)
 			.collect(Collectors.toList());
@@ -66,11 +43,7 @@ public class CourseLevelCourseLevelStaticService implements CourseLevelStaticUse
 	@Transactional(readOnly = true)
 	@Override
 	public CourseLevel getCourseLevel(Long id) {
-		StaticJpaEntity entity = staticJpaRepository.findById(id)
-			.orElseThrow(() -> new ApiExceptionImpl(
-				ErrorCodeImpl.NOT_FOUND, "id: %s".formatted(id)));
-
-		return CourseLevel.from(entity);
+		return CourseLevel.from(staticPort.getStatic(id));
 	}
 
 }
