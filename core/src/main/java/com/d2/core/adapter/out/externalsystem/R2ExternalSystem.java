@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.d2.core.application.port.out.StoragePort;
+import com.d2.core.application.port.out.ObjectStoragePort;
 import com.d2.core.error.ErrorCodeImpl;
 import com.d2.core.exception.ApiExceptionImpl;
 
@@ -21,25 +21,43 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Component
-public class R2ExternalSystem implements StoragePort {
+public class R2ExternalSystem implements ObjectStoragePort {
 	private final AmazonS3 amazonS3;
 
 	@Value("${aws.s3.bucketName:null}")
 	private String bucketName;
 
 	@Override
-	public String uploadImage(MultipartFile imageFile) {
-		return uploadFile(imageFile);
+	public String uploadImage(String preUrl, MultipartFile imageFile) {
+		if (preUrl != null) {
+			String newImageUrl = uploadFile(imageFile);
+
+			String key = extractKeyFromUrl(preUrl);
+			amazonS3.deleteObject(bucketName, key);
+			return newImageUrl;
+		} else {
+			return uploadFile(imageFile);
+		}
 	}
 
 	@Override
-	public List<String> uploadImages(List<MultipartFile> imageFiles) {
-		return imageFiles.stream().map(this::uploadFile).collect(Collectors.toList());
-	}
+	public List<String> uploadImages(List<String> preImageUrls, List<MultipartFile> imageFiles) {
+		if (bucketName == null) {
+			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "r2 bucket is null");
+		}
 
-	@Override
-	public String uploadVideo(MultipartFile videoFile) {
-		return null;
+		if (preImageUrls != null && !imageFiles.isEmpty()) {
+			List<String> newUploadedUrls = imageFiles.stream().map(this::uploadFile).collect(Collectors.toList());
+
+			preImageUrls.forEach(url -> {
+				String key = extractKeyFromUrl(url);
+				amazonS3.deleteObject(bucketName, key);
+			});
+
+			return newUploadedUrls;
+		} else {
+			return imageFiles.stream().map(this::uploadFile).collect(Collectors.toList());
+		}
 	}
 
 	private String uploadFile(MultipartFile file) {
@@ -59,6 +77,14 @@ public class R2ExternalSystem implements StoragePort {
 				"fileSize=%s, contentType=%s".formatted(file.getSize(), file.getContentType()));
 		}
 
-		return amazonS3.getUrl(bucketName, uniqueFileKey).toString();
+		return uniqueFileKey;
+	}
+
+	private String extractKeyFromUrl(String url) {
+		String bucketUrl = String.format("https://%s.s3.amazonaws.com/", bucketName);
+		if (url.startsWith(bucketUrl)) {
+			return url.substring(bucketUrl.length());
+		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "Invalid S3 URL: " + url);
 	}
 }
