@@ -35,7 +35,6 @@ public class R2Config {
 				.withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
 				.build();
 		}
-		
 		return null;
 	}
 }
