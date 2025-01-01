@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.d2.authservice.application.port.in.AdminUserAuthUseCase;
 import com.d2.authservice.application.port.out.AdminUserPort;
+import com.d2.authservice.application.port.out.TeacherPort;
 import com.d2.authservice.application.port.out.TokenPort;
 import com.d2.authservice.application.port.out.VerificationSmsPort;
 import com.d2.authservice.constant.TokenConstant;
@@ -17,6 +18,7 @@ import com.d2.authservice.model.dto.AdminUserDto;
 import com.d2.authservice.model.dto.TokenDto;
 import com.d2.authservice.model.enums.AdminUserStatus;
 import com.d2.core.exception.ApiExceptionImpl;
+import com.d2.core.model.domain.AdminUserAuth;
 import com.d2.core.model.enums.AdminUserRole;
 import com.d2.core.model.enums.TokenRole;
 
@@ -29,6 +31,7 @@ public class AdminUserAuthService implements AdminUserAuthUseCase {
 	private final TokenPort tokenPort;
 	private final AdminUserPort adminUserPort;
 	private final VerificationSmsPort verificationSmsPort;
+	private final TeacherPort teacherPort;
 
 	@Override
 	public AdminUserLogin signup(AdminUserRole adminUserRole, String nickname, String email, String password,
@@ -50,6 +53,13 @@ public class AdminUserAuthService implements AdminUserAuthUseCase {
 
 		Map<String, Object> data = getAdminUserClaimData(adminUserDto.getId());
 		TokenDto accessTokenDto = tokenPort.issueAccessToken(data);
+
+		if (adminUserRole.equals(AdminUserRole.TEACHER)) {
+			AdminUserAuth adminUserAuth = new AdminUserAuth(adminUserDto.getId(), TokenRole.ADMIN,
+				adminUserDto.getAdminUserRole());
+			teacherPort.register(adminUserAuth, adminUserDto.getNickname(), adminUserDto.getEmail(),
+				adminUserDto.getPhoneNumber());
+		}
 
 		TokenDto refreshTokenDto = tokenPort.issueRefreshToken(data);
 		return AdminUserLogin.from(adminUserDto, accessTokenDto, refreshTokenDto);
