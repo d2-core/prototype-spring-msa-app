@@ -3,18 +3,30 @@ server:
 spring:
   application:
     name: notification-service
-  datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB_NAME:notification}?useUnicode=yes&characterEncoding=UTF-8&rewriteBatchedStatements=true
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${MYSQL_USER_NAME:prototype}
-    password: ${MYSQL_PASSWORD:1234}
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+  #  datasource:
+  #    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB_NAME:notification}?useUnicode=yes&characterEncoding=UTF-8&rewriteBatchedStatements=true
+  #    driver-class-name: com.mysql.cj.jdbc.Driver
+  #    username: ${MYSQL_USER_NAME:prototype}
+  #    password: ${MYSQL_PASSWORD:1234}
+  #  jpa:
+  #    hibernate:
+  #      ddl-auto: none
+  #    show-sql: true
+  #    properties:
+  #      hibernate:
+  #        format_sql: true
+  kafka:
+    bootstrap-servers:
+      - localhost:19092
+      - localhost:19093
+      - localhost:19094
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 logging:
   level:
