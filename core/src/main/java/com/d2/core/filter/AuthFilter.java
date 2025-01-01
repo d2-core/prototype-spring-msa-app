@@ -36,8 +36,7 @@ public class AuthFilter implements Filter {
 		while (headerNames.hasMoreElements()) {
 			String key = headerNames.nextElement();
 			String value = httpRequest.getHeader(key);
-
-			if (key.startsWith(HeaderConstant.X_D2_PREFIX)) {
+			if (key.startsWith(HeaderConstant.X_D2_PREFIX.toLowerCase())) {
 				requestAttributes.setAttribute(key, value, RequestAttributes.SCOPE_REQUEST);
 			}
 		}
