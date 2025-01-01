@@ -28,3 +28,6 @@ token:
 logging:
   level:
     root: ${LOGGING_LEVEL:INFO}
+
+url:
+  product: http://localhost:8083
