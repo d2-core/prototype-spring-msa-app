@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -38,8 +39,24 @@ public class InternalRestTemplate {
 		return validate(uri.toString(), response, typeReference);
 	}
 
+	public <T> API<T> get(String url, HttpHeaders headers, Object query, TypeReference<API<T>> typeReference) {
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		URI uri = convertUri(url, query);
+		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+
+		return validate(uri.toString(), response, typeReference);
+	}
+
 	public <T> API<T> post(String url, Object body, TypeReference<API<T>> typeReference) {
 		HttpEntity<?> entity = new HttpEntity<>(body);
+
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+		return validate(url, response, typeReference);
+	}
+
+	public <T> API<T> post(String url, HttpHeaders headers, Object body, TypeReference<API<T>> typeReference) {
+		HttpEntity<?> entity = new HttpEntity<>(body, headers);
 
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
@@ -54,9 +71,25 @@ public class InternalRestTemplate {
 		return validate(url, response, typeReference);
 	}
 
+	public <T> API<T> patch(String url, HttpHeaders headers, Object body, TypeReference<API<T>> typeReference) {
+		HttpEntity<?> entity = new HttpEntity<>(body, headers);
+
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
+
+		return validate(url, response, typeReference);
+	}
+
 	public <T> API<T> delete(String url, Object query, TypeReference<API<T>> typeReference) {
 		URI uri = convertUri(url, query);
 		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
+
+		return validate(uri.toString(), response, typeReference);
+	}
+
+	public <T> API<T> delete(String url, HttpHeaders headers, Object query, TypeReference<API<T>> typeReference) {
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		URI uri = convertUri(url, query);
+		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.DELETE, entity, String.class);
 
 		return validate(uri.toString(), response, typeReference);
 	}
