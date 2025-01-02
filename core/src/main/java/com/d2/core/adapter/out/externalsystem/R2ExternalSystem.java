@@ -16,6 +16,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.d2.core.application.port.out.ObjectStoragePort;
 import com.d2.core.error.ErrorCodeImpl;
 import com.d2.core.exception.ApiExceptionImpl;
+import com.d2.core.utils.ImageUrlHelper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,11 @@ public class R2ExternalSystem implements ObjectStoragePort {
 	private String bucketName;
 
 	@Override
+	public String uploadImage(MultipartFile imageFile) {
+		return uploadFile(imageFile);
+	}
+
+	@Override
 	public String uploadImage(String preUrl, MultipartFile imageFile) {
 		if (preUrl != null) {
 			String newImageUrl = uploadFile(imageFile);
@@ -38,6 +44,11 @@ public class R2ExternalSystem implements ObjectStoragePort {
 		} else {
 			return uploadFile(imageFile);
 		}
+	}
+
+	@Override
+	public List<String> uploadImages(List<MultipartFile> imageFiles) {
+		return imageFiles.stream().map(this::uploadFile).collect(Collectors.toList());
 	}
 
 	@Override
@@ -64,7 +75,9 @@ public class R2ExternalSystem implements ObjectStoragePort {
 		if (bucketName == null) {
 			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "r2 bucket is null");
 		}
-		String uniqueFileKey = LocalDate.now().format(DateTimeFormatter.ISO_DATE) + "-" + UUID.randomUUID();
+		String prefix = ImageUrlHelper.objectStorePrefix;
+		String uniqueFileKey =
+			prefix + "-" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + "-" + UUID.randomUUID();
 
 		try (InputStream inputStream = file.getInputStream()) {
 			ObjectMetadata metadata = new ObjectMetadata();
