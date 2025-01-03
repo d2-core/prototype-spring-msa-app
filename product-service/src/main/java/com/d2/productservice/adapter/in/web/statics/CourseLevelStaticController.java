@@ -82,7 +82,7 @@ public class CourseLevelStaticController {
 	@GetMapping("v1/statics/course/levels")
 	public API<List<CourseCategory>> getList(@AdminUserAuthInjection AdminUserAuth adminUserAuth) {
 
-		return API.OK(courseStaticUseCase.getStaticList(StaticCategory.COURSE_CATEGORY)
+		return API.OK(courseStaticUseCase.getStaticList(StaticCategory.COURSE_LEVEL)
 			.stream().map(CourseCategory::from)
 			.collect(Collectors.toList()));
 	}

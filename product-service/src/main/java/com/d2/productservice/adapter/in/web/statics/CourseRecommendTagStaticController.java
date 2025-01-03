@@ -19,7 +19,7 @@ import com.d2.core.model.domain.AdminUserAuth;
 import com.d2.core.model.domain.MoveOrder;
 import com.d2.core.resolver.AdminUserAuthInjection;
 import com.d2.productservice.application.port.in.CourseStaticUseCase;
-import com.d2.productservice.model.domain.CourseCategory;
+import com.d2.productservice.model.domain.CourseRecommendTag;
 import com.d2.productservice.model.dto.StaticDto;
 import com.d2.productservice.model.enums.StaticCategory;
 import com.d2.productservice.model.request.StaticMoveRequest;
@@ -34,7 +34,7 @@ public class CourseRecommendTagStaticController {
 	private final CourseStaticUseCase courseStaticUseCase;
 
 	@PostMapping("v1/statics/course/recommend-tags")
-	public API<CourseCategory> register(
+	public API<CourseRecommendTag> register(
 		@AdminUserAuthInjection AdminUserAuth adminUserAuth,
 		@RequestBody StaticUpsertRequest staticUpsertRequest) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
@@ -42,7 +42,7 @@ public class CourseRecommendTagStaticController {
 				null,
 				staticUpsertRequest.getName(),
 				staticUpsertRequest.getDescription());
-			return API.OK(CourseCategory.from(staticDto));
+			return API.OK(CourseRecommendTag.from(staticDto));
 		} else {
 			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
 				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
@@ -64,7 +64,7 @@ public class CourseRecommendTagStaticController {
 	}
 
 	@PutMapping("v1/statics/course/recommend-tags/{courseRecommendTagId}")
-	public API<CourseCategory> modify(
+	public API<CourseRecommendTag> modify(
 		@AdminUserAuthInjection AdminUserAuth adminUserAuth,
 		@PathVariable Long courseRecommendTagId,
 		@RequestBody StaticUpsertRequest staticUpsertRequest) {
@@ -72,7 +72,7 @@ public class CourseRecommendTagStaticController {
 			StaticDto staticDto = courseStaticUseCase.upsertStatic(StaticCategory.COURSE_RECOMMEND_TAG,
 				courseRecommendTagId,
 				staticUpsertRequest.getName(), staticUpsertRequest.getDescription());
-			return API.OK(CourseCategory.from(staticDto));
+			return API.OK(CourseRecommendTag.from(staticDto));
 		} else {
 			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
 				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
@@ -81,16 +81,16 @@ public class CourseRecommendTagStaticController {
 	}
 
 	@GetMapping("v1/statics/course/recommend-tags")
-	public API<List<CourseCategory>> getList(@AdminUserAuthInjection AdminUserAuth adminUserAuth) {
+	public API<List<CourseRecommendTag>> getList(@AdminUserAuthInjection AdminUserAuth adminUserAuth) {
 
 		return API.OK(courseStaticUseCase.getStaticList(StaticCategory.COURSE_RECOMMEND_TAG)
-			.stream().map(CourseCategory::from)
+			.stream().map(CourseRecommendTag::from)
 			.collect(Collectors.toList()));
 	}
 
 	@GetMapping("v1/statics/course/recommend-tags/{courseRecommendTagId}")
-	public API<CourseCategory> getDetail(@PathVariable Long courseRecommendTagId) {
+	public API<CourseRecommendTag> getDetail(@PathVariable Long courseRecommendTagId) {
 		StaticDto staticDto = courseStaticUseCase.getStatic(courseRecommendTagId);
-		return API.OK(CourseCategory.from(staticDto));
+		return API.OK(CourseRecommendTag.from(staticDto));
 	}
 }
