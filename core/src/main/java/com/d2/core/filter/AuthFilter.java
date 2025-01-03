@@ -2,13 +2,11 @@ package com.d2.core.filter;
 
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Objects;
 
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import com.d2.core.constant.HeaderConstant;
+import com.d2.core.context.RequestScopeContext;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -32,16 +30,19 @@ public class AuthFilter implements Filter {
 
 		Enumeration<String> headerNames = httpRequest.getHeaderNames();
 
-		RequestAttributes requestAttributes = Objects.requireNonNull(RequestContextHolder.getRequestAttributes());
-		while (headerNames.hasMoreElements()) {
-			String key = headerNames.nextElement();
-			String value = httpRequest.getHeader(key);
-			if (key.startsWith(HeaderConstant.X_D2_PREFIX.toLowerCase())) {
-				requestAttributes.setAttribute(key, value, RequestAttributes.SCOPE_REQUEST);
+		try {
+			while (headerNames.hasMoreElements()) {
+				String key = headerNames.nextElement();
+				String value = httpRequest.getHeader(key);
+				if (key.startsWith(HeaderConstant.X_D2_PREFIX.toLowerCase())) {
+					RequestScopeContext.setAttribute(key, value);
+				}
 			}
-		}
 
-		filterChain.doFilter(servletRequest, servletResponse);
+			filterChain.doFilter(servletRequest, servletResponse);
+		} finally {
+			RequestScopeContext.clear();
+		}
 
 	}
 }
