@@ -7,6 +7,7 @@ import org.apache.kafka.common.header.Header;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 import com.d2.core.constant.HeaderConstant;
@@ -27,7 +28,7 @@ public class InternalKafkaProducer {
 
 	private final ObjectMapper objectMapper;
 
-	public <T> void sendAsyncTask(String topic, T value) {
+	public void sendAsyncTask(String topic, Object value) {
 		try {
 			String payload = objectMapper.writeValueAsString(value);
 			MessageBuilder<String> builder = MessageBuilder
@@ -49,6 +50,27 @@ public class InternalKafkaProducer {
 		} catch (Exception ex) {
 			log.error("kafka-send: {}", ex);
 			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "asyncTask json parsing error");
+		}
+	}
+
+	public void sendAsyncTask(String topic, Object value, MessageHeaderAccessor headers) {
+		try {
+			String payload = objectMapper.writeValueAsString(value);
+			MessageBuilder<String> builder = MessageBuilder
+				.withPayload(payload);
+
+			headers.setHeader(KafkaHeaders.TOPIC, topic);
+			headers.setHeader(KafkaConstant.RETRY_COUNT, KafkaConstant.RETRY_COUNT_DEFAULT_VALUE);
+			if (LocalThreadHelper.getRequestUUID() != null) {
+				headers.setHeader(HeaderConstant.X_D2_REQUEST_UUID, LocalThreadHelper.getRequestUUID());
+			}
+			builder.setHeaders(headers);
+
+			log.info("kafka-send: {}", "task: %s".formatted(payload));
+			kafkaTemplate.send(builder.build());
+		} catch (Exception ex) {
+			log.error("kafka-send: {}", ex);
+			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, ex);
 		}
 	}
 
