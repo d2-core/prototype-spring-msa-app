@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Aspect
 @RequiredArgsConstructor
 @Component
-public class KafkaLogger {
+public class KafkaLoggerAccept {
 
 	private final InternalKafkaProducer internalKafkaProducer;
 
