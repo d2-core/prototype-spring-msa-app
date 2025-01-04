@@ -28,6 +28,9 @@ public class R2ExternalSystem implements ObjectStoragePort {
 	@Value("${aws.s3.bucketName:null}")
 	private String bucketName;
 
+	@Value("${url.r2}")
+	private String r2Url;
+
 	@Override
 	public String uploadImage(MultipartFile imageFile) {
 		return uploadFile(imageFile);
@@ -90,7 +93,7 @@ public class R2ExternalSystem implements ObjectStoragePort {
 				"fileSize=%s, contentType=%s".formatted(file.getSize(), file.getContentType()));
 		}
 
-		return uniqueFileKey;
+		return r2Url + "/" + uniqueFileKey;
 	}
 
 	private String extractKeyFromUrl(String url) {

@@ -50,3 +50,4 @@ logging:
 
 url:
   auth: http://localhost:8080
+  r2: ${R2_URL}

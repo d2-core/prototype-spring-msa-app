@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.d2.core.application.port.out.ObjectStoragePort;
 import com.d2.core.model.dto.FileForm;
-import com.d2.core.utils.ImageUrlHelper;
 import com.d2.productservice.application.port.in.CourseUseCase;
 import com.d2.productservice.application.port.out.CoursePort;
 import com.d2.productservice.application.port.out.TeacherPort;
@@ -56,7 +55,7 @@ public class CourseService implements CourseUseCase {
 		} else {
 			List<String> newImages = thumbnailImageFiles.stream().map(fileForm -> {
 				if (fileForm.getFile() == null) {
-					return ImageUrlHelper.extractSubstring(fileForm.getUrl());
+					return fileForm.getUrl();
 				} else {
 					return objectStoragePort.uploadImage(fileForm.getFile());
 				}
