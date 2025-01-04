@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CourseDto {
 	private Long id;
+	private Long teacherId;
 	private List<String> thumbnailImageUrls;
 	private Long courseCategory;
 	private String title;
@@ -31,6 +32,7 @@ public class CourseDto {
 	public static CourseDto from(CourseJpaEntity entity) {
 		return new CourseDto(
 			entity.getId(),
+			entity.getTeacherId(),
 			entity.getThumbnailImageUrls(),
 			entity.getCourseCategory().getId(),
 			entity.getTitle(),

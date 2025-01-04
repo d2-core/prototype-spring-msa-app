@@ -14,4 +14,6 @@ public interface TeacherPort {
 	TeacherDto getTeacher(Long courseId);
 
 	TeacherDto getTeacherByAdminUserId(Long adminUserId);
+
+	Long getTeacherIdByAdminUserId(Long adminUserId);
 }

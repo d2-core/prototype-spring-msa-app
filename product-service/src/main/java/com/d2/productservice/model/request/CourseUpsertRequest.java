@@ -13,9 +13,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CourseUpsertRequest {
-	@NotNull
-	private Long teacherId;
-
 	@NotEmpty
 	private List<FileForm> thumbnailImageFiles;
 

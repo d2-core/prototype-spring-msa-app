@@ -13,6 +13,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class Course {
 	private final Long id;
+	private final Long teacherId;
 
 	private final List<String> thumbnailImageUrls;
 	private final Long courseCategoryId;
@@ -33,6 +34,7 @@ public class Course {
 	public static Course from(CourseDto courseDto) {
 		return new Course(
 			courseDto.getId(),
+			courseDto.getTeacherId(),
 			courseDto.getThumbnailImageUrls(),
 			courseDto.getCourseCategory(),
 			courseDto.getTitle(),

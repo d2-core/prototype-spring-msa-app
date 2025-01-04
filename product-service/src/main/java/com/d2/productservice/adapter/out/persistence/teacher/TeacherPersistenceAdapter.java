@@ -64,4 +64,21 @@ public class TeacherPersistenceAdapter implements TeacherPort {
 		}
 		throw new ApiExceptionImpl(ErrorCodeImpl.NOT_FOUND, "adminUserId: %s".formatted(adminUserId));
 	}
+
+	@Override
+	public Long getTeacherIdByAdminUserId(Long adminUserId) {
+		QTeacherJpaEntity teacherJpaEntity = QTeacherJpaEntity.teacherJpaEntity;
+		QTeacherTeamMemberJpaEntity teacherTeamMemberJpaEntity = QTeacherTeamMemberJpaEntity.teacherTeamMemberJpaEntity;
+		Long result = jpqlQueryFactory.select(teacherJpaEntity.id)
+			.from(teacherJpaEntity)
+			.join(teacherTeamMemberJpaEntity)
+			.on(teacherJpaEntity.id.eq(teacherTeamMemberJpaEntity.teacherJpaEntity.id)
+				.and(teacherTeamMemberJpaEntity.adminUserId.eq(adminUserId)))
+			.fetchFirst();
+
+		if (result != null) {
+			return result;
+		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.NOT_FOUND, "adminUserId: %s".formatted(adminUserId));
+	}
 }

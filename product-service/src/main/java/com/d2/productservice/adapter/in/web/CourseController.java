@@ -43,11 +43,14 @@ public class CourseController {
 		@AdminUserAuthInjection AdminUserAuth adminUserAuth,
 		@Valid @ModelAttribute CourseUpsertRequest request) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
-			Course course = courseUseCase.upsertCourse(null, request.getTeacherId(),
+			Course course = courseUseCase.upsertCourse(
+				adminUserAuth.getAdminUserId(),
+				null,
 				request.getThumbnailImageFiles(),
 				request.getCourseCategoryId(), request.getTitle(), request.getSubTitle(),
 				request.getDescriptionWithMarkdown(), request.getCourseLevelId(), request.getTags(),
-				request.getPrice());
+				request.getPrice()
+			);
 			return API.OK(course);
 		}
 		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
@@ -60,11 +63,14 @@ public class CourseController {
 		@PathVariable Long courseId,
 		@Valid @ModelAttribute CourseUpsertRequest request) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
-			Course course = courseUseCase.upsertCourse(courseId, request.getTeacherId(),
+			Course course = courseUseCase.upsertCourse(
+				adminUserAuth.getAdminUserId(),
+				courseId,
 				request.getThumbnailImageFiles(),
 				request.getCourseCategoryId(), request.getTitle(), request.getSubTitle(),
 				request.getDescriptionWithMarkdown(), request.getCourseLevelId(), request.getTags(),
-				request.getPrice());
+				request.getPrice()
+			);
 			return API.OK(course);
 		}
 		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
