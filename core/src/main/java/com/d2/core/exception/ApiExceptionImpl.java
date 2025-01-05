@@ -14,6 +14,14 @@ public class ApiExceptionImpl extends RuntimeException implements ApiException {
 	private String log;
 	private Object body;
 
+	public ApiExceptionImpl(ErrorCode errorCode) {
+		super();
+		this.httpCode = errorCode.getHttpCode();
+		this.result = Result.ERROR(errorCode);
+		this.log = "Code: " + errorCode.getCode() + ", Reason: " + errorCode.getReason();
+		this.body = new Object();
+	}
+
 	public ApiExceptionImpl(ErrorCode errorCode, String reasonArg) {
 		super();
 		this.httpCode = errorCode.getHttpCode();

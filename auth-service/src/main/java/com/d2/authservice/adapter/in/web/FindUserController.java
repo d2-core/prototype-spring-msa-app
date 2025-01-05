@@ -38,9 +38,8 @@ public class FindUserController {
 	public API<User> getUser(@UserAuthInjection UserAuth userAuth) {
 		if (!userAuth.getUserId().equals(AuthConstant.NOT_EXIST)) {
 			return API.OK(findUserUseCase.getUser(userAuth.getUserId()));
-		} else {
-			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED, "invalid id: %s".formatted(userAuth.getUserId()));
 		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@GetMapping("v1/users/{userId}")

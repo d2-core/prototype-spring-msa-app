@@ -34,8 +34,7 @@ public class TeacherController {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			return API.OK(teacherUseCase.getTeacher(adminUserId));
 		}
-		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-			"invalid id: %s".formatted(adminUserAuth.getAdminUserId()));
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 
 	}
 
@@ -47,7 +46,6 @@ public class TeacherController {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			return API.OK(teacherUseCase.getTeacherCourseList(teacherId));
 		}
-		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-			"invalid id: %s".formatted(adminUserAuth.getAdminUserId()));
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 }

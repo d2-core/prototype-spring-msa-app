@@ -38,11 +38,8 @@ public class FindAdminUserController {
 	public API<AdminUser> getAdminUser(@AdminUserAuthInjection AdminUserAuth adminUserAuth) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			return API.OK(findAdminUserUseCase.getAdminUser(adminUserAuth.getAdminUserId()));
-		} else {
-			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
-				));
 		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@GetMapping("v1/admin-users/{adminUserId}")
