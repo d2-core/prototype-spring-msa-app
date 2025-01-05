@@ -44,8 +44,8 @@ public class CourseController {
 		@Valid @ModelAttribute CourseUpsertRequest request) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			Course course = courseUseCase.upsertCourse(
-				adminUserAuth.getAdminUserId(),
 				null,
+				request.getTeacherId(),
 				request.getThumbnailImageFiles(),
 				request.getCourseCategoryId(), request.getTitle(), request.getSubTitle(),
 				request.getDescriptionWithMarkdown(), request.getCourseLevelId(), request.getTags(),
@@ -53,8 +53,7 @@ public class CourseController {
 			);
 			return API.OK(course);
 		}
-		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-			"id: %s, tokenRole: %s".formatted(adminUserAuth.getAdminUserId(), adminUserAuth.getTokenRole()));
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@PutMapping("v1/courses/{courseId}")
@@ -64,8 +63,8 @@ public class CourseController {
 		@Valid @ModelAttribute CourseUpsertRequest request) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			Course course = courseUseCase.upsertCourse(
-				adminUserAuth.getAdminUserId(),
 				courseId,
+				request.getTeacherId(),
 				request.getThumbnailImageFiles(),
 				request.getCourseCategoryId(), request.getTitle(), request.getSubTitle(),
 				request.getDescriptionWithMarkdown(), request.getCourseLevelId(), request.getTags(),
@@ -73,8 +72,7 @@ public class CourseController {
 			);
 			return API.OK(course);
 		}
-		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-			"id: %s, tokenRole: %s".formatted(adminUserAuth.getAdminUserId(), adminUserAuth.getTokenRole()));
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@DeleteMapping("v1/courses/{courseId}")
@@ -86,8 +84,7 @@ public class CourseController {
 			courseUseCase.deleteCourse(courseId);
 			return API.NO_CONTENT();
 		}
-		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-			"id: %s, tokenRole: %s".formatted(adminUserAuth.getAdminUserId(), adminUserAuth.getTokenRole()));
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@PostMapping("v1/courses/publish")
@@ -104,8 +101,7 @@ public class CourseController {
 			}
 			return API.NO_CONTENT();
 		}
-		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-			"id: %s, tokenRole: %s".formatted(adminUserAuth.getAdminUserId(), adminUserAuth.getTokenRole()));
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@GetMapping("v1/courses")
@@ -121,8 +117,7 @@ public class CourseController {
 		if (!userAuth.getUserId().equals(AuthConstant.NOT_EXIST)) {
 
 		}
-		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-			"id: %s, tokenRole: %s".formatted(adminUserAuth.getAdminUserId(), adminUserAuth.getTokenRole()));
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@GetMapping("v1/courses/{courseId}/teachers")
@@ -139,8 +134,7 @@ public class CourseController {
 		if (!userAuth.getUserId().equals(AuthConstant.NOT_EXIST)) {
 
 		}
-		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-			"id: %s, tokenRole: %s".formatted(adminUserAuth.getAdminUserId(), adminUserAuth.getTokenRole()));
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@GetMapping("v1/courses/{courseId}")
@@ -157,7 +151,6 @@ public class CourseController {
 
 		}
 
-		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-			"id: %s, tokenRole: %s".formatted(adminUserAuth.getAdminUserId(), adminUserAuth.getTokenRole()));
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 }

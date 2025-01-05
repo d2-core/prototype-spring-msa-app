@@ -32,11 +32,9 @@ public class CourseService implements CourseUseCase {
 
 	@Transactional
 	@Override
-	public Course upsertCourse(Long adminUserId, Long courseId, List<FileForm> thumbnailImageFiles,
+	public Course upsertCourse(Long courseId, Long teacherId, List<FileForm> thumbnailImageFiles,
 		Long courseCategoryId, String title, String subTitle, String descriptionWithMarkdown, Long courseLevel,
 		List<String> tags, Integer price) {
-
-		Long teacherId = teacherPort.getTeacherIdByAdminUserId(adminUserId);
 
 		CourseDto courseDto;
 		if (courseId == null) {

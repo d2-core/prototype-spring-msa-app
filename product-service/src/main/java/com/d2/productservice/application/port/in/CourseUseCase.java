@@ -9,7 +9,7 @@ import com.d2.productservice.model.dto.RangeNumberDto;
 
 public interface CourseUseCase {
 
-	Course upsertCourse(Long adminUserId, Long courseId, List<FileForm> thumbnailImages, Long courseCategoryId,
+	Course upsertCourse(Long courseId, Long teacherId, List<FileForm> thumbnailImages, Long courseCategoryId,
 		String title, String subTitle, String descriptionWithMarkdown, Long courseLevelId, List<String> tags,
 		Integer price);
 
