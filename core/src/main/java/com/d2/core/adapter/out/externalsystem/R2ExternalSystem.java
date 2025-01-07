@@ -3,6 +3,7 @@ package com.d2.core.adapter.out.externalsystem;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -12,11 +13,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.d2.core.application.port.out.ObjectStoragePort;
 import com.d2.core.error.ErrorCodeImpl;
 import com.d2.core.exception.ApiExceptionImpl;
-import com.d2.core.utils.ImageUrlHelper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,59 +31,34 @@ public class R2ExternalSystem implements ObjectStoragePort {
 	@Value("${aws.s3.bucketName:null}")
 	private String bucketName;
 
-	@Value("${url.r2}")
+	@Value("${url.r2:null}")
 	private String r2Url;
 
-	@Override
-	public String uploadImage(MultipartFile imageFile) {
-		return uploadFile(imageFile);
-	}
+	@Value("${aws.s3.urlPrefix:null}")
+	private String urlPrefix;
 
 	@Override
-	public String uploadImage(String preUrl, MultipartFile imageFile) {
-		if (preUrl != null) {
-			String newImageUrl = uploadFile(imageFile);
+	public String uploadFile(MultipartFile file) {
+		validateSettings();
 
-			String key = extractKeyFromUrl(preUrl);
-			amazonS3.deleteObject(bucketName, key);
-			return newImageUrl;
-		} else {
-			return uploadFile(imageFile);
-		}
-	}
-
-	@Override
-	public List<String> uploadImages(List<MultipartFile> imageFiles) {
-		return imageFiles.stream().map(this::uploadFile).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> uploadImages(List<String> preImageUrls, List<MultipartFile> imageFiles) {
-		if (bucketName == null) {
-			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "r2 bucket is null");
+		if (file == null) {
+			return "";
 		}
 
-		if (preImageUrls != null && !imageFiles.isEmpty()) {
-			List<String> newUploadedUrls = imageFiles.stream().map(this::uploadFile).collect(Collectors.toList());
-
-			preImageUrls.forEach(url -> {
-				String key = extractKeyFromUrl(url);
-				amazonS3.deleteObject(bucketName, key);
-			});
-
-			return newUploadedUrls;
-		} else {
-			return imageFiles.stream().map(this::uploadFile).collect(Collectors.toList());
+		long maxFileBites = 5L * 1024 * 1024;
+		if (file.getSize() > maxFileBites) {
+			throw new ApiExceptionImpl(ErrorCodeImpl.BAG_GATEWAY, "지원하는 파일 사이즈 초과");
 		}
-	}
 
-	private String uploadFile(MultipartFile file) {
-		if (bucketName == null) {
-			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "r2 bucket is null");
+		String originalFilename = file.getOriginalFilename();
+		String fileExtension = "";
+		if (originalFilename != null && originalFilename.contains(".")) {
+			fileExtension = "." + originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
 		}
-		String prefix = ImageUrlHelper.objectStorePrefix;
+
 		String uniqueFileKey =
-			prefix + "-" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + "-" + UUID.randomUUID();
+			urlPrefix + "/" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + "/" + UUID.randomUUID()
+				+ fileExtension;
 
 		try (InputStream inputStream = file.getInputStream()) {
 			ObjectMetadata metadata = new ObjectMetadata();
@@ -96,11 +74,63 @@ public class R2ExternalSystem implements ObjectStoragePort {
 		return r2Url + "/" + uniqueFileKey;
 	}
 
-	private String extractKeyFromUrl(String url) {
-		String bucketUrl = String.format("https://%s.s3.amazonaws.com/", bucketName);
-		if (url.startsWith(bucketUrl)) {
-			return url.substring(bucketUrl.length());
+	@Override
+	public List<String> uploadFiles(List<MultipartFile> files) {
+		return files.stream().map(this::uploadFile).collect(Collectors.toList());
+	}
+
+	@Override
+	public String deleteFile(String fileUrl) {
+		validateSettings();
+
+		if (fileUrl == null || fileUrl.isEmpty()) {
+			return "";
 		}
-		throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "Invalid S3 URL: " + url);
+
+		try {
+			String key = extractKeyFromUrl(fileUrl);
+			String videoPrefix = key.substring(0, key.lastIndexOf("/") + 1);
+
+			ListObjectsV2Request listRequest = new ListObjectsV2Request()
+				.withBucketName(bucketName)
+				.withPrefix(videoPrefix);
+
+			ListObjectsV2Result objects = amazonS3.listObjectsV2(listRequest);
+
+			for (S3ObjectSummary object : objects.getObjectSummaries()) {
+				amazonS3.deleteObject(bucketName, object.getKey());
+			}
+
+			return fileUrl;
+		} catch (Exception e) {
+			throw new ApiExceptionImpl(ErrorCodeImpl.BAG_GATEWAY,
+				"Error deleting video: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public List<String> deleteFiles(List<String> fileUrls) {
+		if (fileUrls == null || fileUrls.isEmpty()) {
+			return new ArrayList<>();
+		}
+		return fileUrls.stream().map(this::deleteFile).collect(Collectors.toList());
+	}
+
+	private void validateSettings() {
+		if (bucketName == null || r2Url == null || urlPrefix == null) {
+			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, "r2 bucket is null");
+		}
+	}
+
+	private String extractKeyFromUrl(String fileUrl) {
+		try {
+			int startIndex = fileUrl.indexOf(urlPrefix);
+			if (startIndex != -1) {
+				return fileUrl.substring(startIndex);
+			}
+			throw new IllegalArgumentException("URL does not contain the specified prefix");
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Could not extract key from URL: " + fileUrl);
+		}
 	}
 }

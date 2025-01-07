@@ -5,12 +5,11 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ObjectStoragePort {
+	String uploadFile(MultipartFile file);
 
-	String uploadImage(MultipartFile imageFile);
+	List<String> uploadFiles(List<MultipartFile> files);
 
-	String uploadImage(String preUrl, MultipartFile imageFile);
+	String deleteFile(String fileUrl);
 
-	List<String> uploadImages(List<MultipartFile> imageFiles);
-
-	List<String> uploadImages(List<String> preImageUrls, List<MultipartFile> imageFiles);
+	List<String> deleteFiles(List<String> fileUrls);
 }
