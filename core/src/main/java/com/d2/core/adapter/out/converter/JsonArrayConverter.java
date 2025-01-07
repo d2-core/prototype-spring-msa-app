@@ -25,7 +25,7 @@ public class JsonArrayConverter<T> implements AttributeConverter<List<T>, String
 	@Override
 	public String convertToDatabaseColumn(List<T> attribute) {
 		if (attribute == null || attribute.isEmpty()) {
-			return null;
+			return "[]";
 		}
 		try {
 			return objectMapper.writeValueAsString(attribute);
