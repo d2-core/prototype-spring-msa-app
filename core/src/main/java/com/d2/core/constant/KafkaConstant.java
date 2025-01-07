@@ -7,4 +7,6 @@ public class KafkaConstant {
 	public static final String ADMIN_USER_SIGNUP_TOPIC = "admin-user-signup";
 
 	public static final String COURSE_EVENT_TOPIC = "course-event";
+
+	public static final String LECTURE_EVENT_TOPIC = "lecture-event";
 }
