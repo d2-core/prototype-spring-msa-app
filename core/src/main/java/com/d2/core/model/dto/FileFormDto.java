@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class FileForm {
+public class FileFormDto {
 	private MultipartFile file;
 
 	private String url;
