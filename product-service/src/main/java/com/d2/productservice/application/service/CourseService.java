@@ -9,15 +9,22 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.d2.core.application.port.out.ObjectStoragePort;
-import com.d2.core.model.dto.FileForm;
+import com.d2.core.error.ErrorCodeImpl;
+import com.d2.core.exception.ApiExceptionImpl;
+import com.d2.core.model.dto.FileFormDto;
 import com.d2.productservice.application.port.in.CourseUseCase;
 import com.d2.productservice.application.port.out.CoursePort;
+import com.d2.productservice.application.port.out.LecturePort;
+import com.d2.productservice.application.port.out.SendPort;
 import com.d2.productservice.application.port.out.TeacherPort;
+import com.d2.productservice.model.SendCourseEvent;
 import com.d2.productservice.model.domain.Course;
 import com.d2.productservice.model.domain.CourseTeacher;
+import com.d2.productservice.model.domain.Lecture;
 import com.d2.productservice.model.dto.CourseDto;
 import com.d2.productservice.model.dto.RangeNumberDto;
 import com.d2.productservice.model.dto.TeacherDto;
+import com.d2.productservice.model.enums.CourseEvent;
 import com.d2.productservice.model.enums.CoursePublishState;
 
 import lombok.RequiredArgsConstructor;
@@ -29,10 +36,12 @@ public class CourseService implements CourseUseCase {
 	private final ObjectStoragePort objectStoragePort;
 	private final CoursePort coursePort;
 	private final TeacherPort teacherPort;
+	private final SendPort sendPort;
+	private final LecturePort lecturePort;
 
 	@Transactional
 	@Override
-	public Course upsertCourse(Long courseId, Long teacherId, List<FileForm> thumbnailImageFiles,
+	public Course upsertCourse(Long courseId, Long teacherId, List<FileFormDto> thumbnailImageFiles,
 		Long courseCategoryId, String title, String subTitle, String descriptionWithMarkdown, Long courseLevel,
 		List<String> tags, Integer price) {
 
@@ -42,12 +51,12 @@ public class CourseService implements CourseUseCase {
 				descriptionWithMarkdown, courseLevel, tags, price);
 
 			List<MultipartFile> multipartFiles = thumbnailImageFiles.stream()
-				.map(FileForm::getFile)
+				.map(FileFormDto::getFile)
 				.filter(Objects::nonNull)
 				.collect(
 					Collectors.toList());
 
-			List<String> thumbnailImageUrls = objectStoragePort.uploadImages(multipartFiles);
+			List<String> thumbnailImageUrls = objectStoragePort.uploadFiles(multipartFiles);
 			courseDto = coursePort.update(courseDto.getId(), thumbnailImageUrls);
 
 		} else {
@@ -55,12 +64,19 @@ public class CourseService implements CourseUseCase {
 				if (fileForm.getFile() == null) {
 					return fileForm.getUrl();
 				} else {
-					return objectStoragePort.uploadImage(fileForm.getFile());
+					return objectStoragePort.uploadFile(fileForm.getFile());
 				}
 			}).collect(Collectors.toList());
 
 			courseDto = coursePort.update(courseId, teacherId, newImages, courseCategoryId, title,
 				subTitle, descriptionWithMarkdown, courseLevel, tags, price);
+		}
+
+		try {
+			sendPort.sendCourseEvent(new SendCourseEvent(courseId, CourseEvent.UPSERT));
+		} catch (Exception e) {
+			objectStoragePort.deleteFiles(courseDto.getThumbnailImageUrls());
+			throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, e);
 		}
 
 		return Course.from(courseDto);
@@ -69,7 +85,13 @@ public class CourseService implements CourseUseCase {
 	@Transactional
 	@Override
 	public Long deleteCourse(Long courseId) {
+		List<String> fileUrls = coursePort.getFileUrls(courseId);
+		
 		coursePort.deleteCourse(courseId);
+
+		objectStoragePort.deleteFiles(fileUrls);
+
+		sendPort.sendCourseEvent(new SendCourseEvent(courseId, CourseEvent.DELETE));
 		return courseId;
 	}
 
@@ -77,13 +99,15 @@ public class CourseService implements CourseUseCase {
 	@Override
 	public Long publishCourse(Long courseId) {
 		coursePort.update(courseId, CoursePublishState.PUBLISH);
+		sendPort.sendCourseEvent(new SendCourseEvent(courseId, CourseEvent.PUBLISH));
 		return courseId;
 	}
 
 	@Transactional
 	@Override
 	public Long unPublishCourse(Long courseId) {
-		coursePort.update(courseId, CoursePublishState.UN_PUBLISH);
+		coursePort.update(courseId, CoursePublishState.PRIVATE);
+		sendPort.sendCourseEvent(new SendCourseEvent(courseId, CourseEvent.PRIVATE));
 		return courseId;
 	}
 
@@ -99,6 +123,13 @@ public class CourseService implements CourseUseCase {
 	public CourseTeacher getCourseTeacher(Long courseId) {
 		TeacherDto teacherDto = teacherPort.getTeacher(courseId);
 		return CourseTeacher.from(courseId, teacherDto);
+	}
+
+	@Override
+	public List<Lecture> getCourseLectureList(Long courseId) {
+		return lecturePort.getLectureList(courseId)
+			.stream().map(Lecture::from)
+			.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
