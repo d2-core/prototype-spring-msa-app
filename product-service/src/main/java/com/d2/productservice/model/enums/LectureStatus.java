@@ -3,9 +3,8 @@ package com.d2.productservice.model.enums;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum CoursePublishState {
-	PUBLISH("발행"),
-	PRIVATE("미발행");
-
+public enum LectureStatus {
+	REGISTER("등록"),
+	DELETE("삭제");
 	private final String description;
 }

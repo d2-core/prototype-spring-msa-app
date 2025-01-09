@@ -2,6 +2,10 @@ package com.d2.productservice.model.request;
 
 import java.util.List;
 
+import com.d2.productservice.model.dto.LectureTimelineDto;
+import com.d2.productservice.model.enums.LectureExportType;
+import com.d2.productservice.model.enums.LectureType;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,12 +14,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class CourseUpsertRequest {
-	@NotNull
-	private Long teacherId;
+public class LectureUpsertRequest {
 
 	@NotNull
-	private Long courseCategoryId;
+	private Long courseId;
+
+	@NotNull
+	private LectureType lectureType;
 
 	@NotEmpty
 	@Size(min = 5)
@@ -23,16 +28,11 @@ public class CourseUpsertRequest {
 
 	@NotEmpty
 	@Size(min = 10)
-	private String subTitle;
-
-	@NotEmpty
-	@Size(min = 10)
-	private String descriptionWithMarkdown;
+	private String description;
 
 	@NotNull
-	private Long courseLevelId;
+	private List<LectureTimelineDto> chapters;
 
-	private List<String> tags;
-
-	private Integer price;
+	@NotNull
+	private LectureExportType lectureExportType;
 }
