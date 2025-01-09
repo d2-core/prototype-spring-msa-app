@@ -43,11 +43,8 @@ public class CourseRecommendTagStaticController {
 				staticUpsertRequest.getName(),
 				staticUpsertRequest.getDescription());
 			return API.OK(CourseRecommendTag.from(staticDto));
-		} else {
-			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
-				));
 		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@PostMapping("v1/statics/course/recommend-tags/move")
@@ -56,11 +53,8 @@ public class CourseRecommendTagStaticController {
 		@RequestBody StaticMoveRequest staticMoveRequest) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			return API.OK(courseStaticUseCase.moveStatic(staticMoveRequest.getMoveOrders()));
-		} else {
-			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
-				));
 		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@PutMapping("v1/statics/course/recommend-tags/{courseRecommendTagId}")
@@ -73,11 +67,8 @@ public class CourseRecommendTagStaticController {
 				courseRecommendTagId,
 				staticUpsertRequest.getName(), staticUpsertRequest.getDescription());
 			return API.OK(CourseRecommendTag.from(staticDto));
-		} else {
-			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
-				));
 		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@GetMapping("v1/statics/course/recommend-tags")

@@ -43,11 +43,8 @@ public class CourseLevelStaticController {
 				staticUpsertRequest.getName(),
 				staticUpsertRequest.getDescription());
 			return API.OK(CourseCategory.from(staticDto));
-		} else {
-			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
-				));
 		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@PostMapping("v1/statics/course/levels/move")
@@ -56,11 +53,8 @@ public class CourseLevelStaticController {
 		@RequestBody StaticMoveRequest staticMoveRequest) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			return API.OK(courseStaticUseCase.moveStatic(staticMoveRequest.getMoveOrders()));
-		} else {
-			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
-				));
 		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@PutMapping("v1/statics/course/levels/{courseLevelId}")
@@ -72,11 +66,8 @@ public class CourseLevelStaticController {
 			StaticDto staticDto = courseStaticUseCase.upsertStatic(StaticCategory.COURSE_LEVEL, courseLevelId,
 				staticUpsertRequest.getName(), staticUpsertRequest.getDescription());
 			return API.OK(CourseCategory.from(staticDto));
-		} else {
-			throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED,
-				"invalid id: %s".formatted(adminUserAuth.getAdminUserId()
-				));
 		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}
 
 	@GetMapping("v1/statics/course/levels")

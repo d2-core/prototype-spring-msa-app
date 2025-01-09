@@ -34,7 +34,7 @@ public class StaticJpaEntity implements MoveAble {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(length = 50)
+	@Column(length = 50, columnDefinition = "varchar(50)")
 	@Enumerated(EnumType.STRING)
 	private StaticCategory staticCategory;
 
