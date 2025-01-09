@@ -13,10 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ListObjectsV2Request;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.d2.core.application.port.out.ObjectStoragePort;
 import com.d2.core.error.ErrorCodeImpl;
 import com.d2.core.exception.ApiExceptionImpl;
@@ -89,17 +86,7 @@ public class R2ExternalSystem implements ObjectStoragePort {
 
 		try {
 			String key = extractKeyFromUrl(fileUrl);
-			String videoPrefix = key.substring(0, key.lastIndexOf("/") + 1);
-
-			ListObjectsV2Request listRequest = new ListObjectsV2Request()
-				.withBucketName(bucketName)
-				.withPrefix(videoPrefix);
-
-			ListObjectsV2Result objects = amazonS3.listObjectsV2(listRequest);
-
-			for (S3ObjectSummary object : objects.getObjectSummaries()) {
-				amazonS3.deleteObject(bucketName, object.getKey());
-			}
+			amazonS3.deleteObject(bucketName, key);
 
 			return fileUrl;
 		} catch (Exception e) {
