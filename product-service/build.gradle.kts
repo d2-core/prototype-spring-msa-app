@@ -17,6 +17,9 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
+    implementation("net.bramp.ffmpeg:ffmpeg:0.7.0")
+    implementation("commons-io:commons-io:2.11.0")
+
 }
 val querydslDir = "src/main/generated"
 
