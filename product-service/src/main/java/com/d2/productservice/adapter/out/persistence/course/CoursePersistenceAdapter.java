@@ -1,6 +1,7 @@
 package com.d2.productservice.adapter.out.persistence.course;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,7 +67,7 @@ public class CoursePersistenceAdapter implements CoursePort {
 		if (coursePublishState.equals(CoursePublishState.PUBLISH)) {
 			newCourseJpaEntity = courseJpaEntity.update(coursePublishState, LocalDateTime.now());
 		}
-		if (coursePublishState.equals(CoursePublishState.UN_PUBLISH)) {
+		if (coursePublishState.equals(CoursePublishState.PRIVATE)) {
 			newCourseJpaEntity = courseJpaEntity.update(coursePublishState);
 		}
 
@@ -118,6 +119,20 @@ public class CoursePersistenceAdapter implements CoursePort {
 			.stream()
 			.map(CourseDto::from)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getFileUrls(Long courseId) {
+		QCourseJpaEntity courseJpaEntity = QCourseJpaEntity.courseJpaEntity;
+		List<String> thumbnailImageUrls = jpqlQueryFactory.select(courseJpaEntity.thumbnailImageUrls)
+			.from(courseJpaEntity)
+			.where(courseJpaEntity.id.eq(courseId))
+			.fetchOne();
+
+		if (thumbnailImageUrls != null) {
+			return new ArrayList<>(thumbnailImageUrls);
+		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.NOT_FOUND);
 	}
 
 	@Override
