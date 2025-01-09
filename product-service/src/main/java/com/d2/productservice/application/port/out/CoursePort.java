@@ -25,6 +25,8 @@ public interface CoursePort {
 
 	List<CourseDto> getTeacherCourseList(Long teacherId);
 
+	List<String> getFileUrls(Long courseId);
+
 	void deleteCourse(Long courseId);
 
 }
