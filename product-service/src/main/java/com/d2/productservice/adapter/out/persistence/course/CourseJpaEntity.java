@@ -1,6 +1,7 @@
 package com.d2.productservice.adapter.out.persistence.course;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -8,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.d2.core.adapter.out.converter.StringListConverter;
+import com.d2.productservice.adapter.out.persistence.lecture.LectureJpaEntity;
 import com.d2.productservice.adapter.out.persistence.statics.StaticJpaEntity;
 import com.d2.productservice.model.enums.CoursePublishState;
 
@@ -22,6 +24,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -42,7 +45,7 @@ public class CourseJpaEntity {
 	private Long teacherId;
 
 	@Convert(converter = StringListConverter.class)
-	@Column(columnDefinition = "longtext")
+	@Column(columnDefinition = "text")
 	private List<String> thumbnailImageUrls;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -55,7 +58,7 @@ public class CourseJpaEntity {
 	@Column(length = 1024)
 	private String subTitle;
 
-	@Column(columnDefinition = "longtext")
+	@Column(columnDefinition = "text")
 	private String descriptionWithMarkdown;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -66,9 +69,9 @@ public class CourseJpaEntity {
 	@Column(columnDefinition = "longtext")
 	private List<String> tags;
 
-	private Integer price;
+	private Integer price = 0;
 
-	@Column(length = 50)
+	@Column(length = 50, columnDefinition = "varchar(50)")
 	@Enumerated(EnumType.STRING)
 	private CoursePublishState coursePublishState;
 
@@ -79,6 +82,13 @@ public class CourseJpaEntity {
 	private LocalDateTime updatedAt;
 
 	private LocalDateTime publishedAt;
+
+	@OneToMany(mappedBy = "courseJpaEntity", fetch = FetchType.LAZY)
+	private List<LectureJpaEntity> lectureJpaEntities = new ArrayList<>();
+
+	public CourseJpaEntity(Long id) {
+		this.id = id;
+	}
 
 	public CourseJpaEntity(Long teacherId, List<String> thumbnailImageUrls, Long courseCategoryId, String title,
 		String subTitle, String descriptionWithMarkdown, Long courseLevelId, List<String> tags, Integer price) {
@@ -95,7 +105,7 @@ public class CourseJpaEntity {
 		this.courseLevel = courseLevelJpaEntity;
 		this.tags = tags;
 		this.price = price;
-		this.coursePublishState = CoursePublishState.UN_PUBLISH;
+		this.coursePublishState = CoursePublishState.PRIVATE;
 	}
 
 	public CourseJpaEntity update(Long teacherId, List<String> thumbnailImageUrls, Long courseCategoryId, String title,
