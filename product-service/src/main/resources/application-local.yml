@@ -1,6 +1,13 @@
 server:
   port: ${SERVER_PORT:8083}
 spring:
+  servlet:
+    multipart:
+      location: ${user.home}/temp
+      enabled: true
+      max-file-size: 3072MB
+      max-request-size: 3072MB
+
   data:
     redis:
       host: localhost
@@ -41,6 +48,7 @@ aws:
     endpointUrl: ${R2_ENDPOINT_URL}
     region: ${R2_ENDPOINT_REGION}
     bucketName: ${R2_BUCKET_NAME}
+    urlPrefix: d2-core-creation-storage
 
 logging:
   level:
@@ -51,3 +59,11 @@ logging:
 url:
   auth: http://localhost:8080
   r2: ${R2_URL}
+
+ffprobe:
+  path: /opt/homebrew/bin/ffprobe
+
+ffmpeg:
+  path: /opt/homebrew/bin/ffmpeg
+
+
