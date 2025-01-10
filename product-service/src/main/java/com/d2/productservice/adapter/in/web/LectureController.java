@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +25,7 @@ import com.d2.core.resolver.AdminUserAuthInjection;
 import com.d2.core.utils.FileManager;
 import com.d2.productservice.application.port.in.LectureUseCase;
 import com.d2.productservice.model.domain.Lecture;
+import com.d2.productservice.model.domain.LectureVideoCondition;
 import com.d2.productservice.model.enums.LectureType;
 import com.d2.productservice.model.request.LectureUpdateExportTypeRequest;
 import com.d2.productservice.model.request.LectureUpsertFileRequest;
@@ -92,11 +94,13 @@ public class LectureController {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			if (bodyRequest.getLectureType().equals(LectureType.VIDEO)) {
 				File mutipartTempInputFile = null;
-				try {
-					mutipartTempInputFile = fileManager.writeMutipartFileTempFile("input", ".mp4",
-						fileRequest.getVideoFile().getFile());
-				} catch (Exception ex) {
-					throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, ex);
+				if (fileRequest.getVideoFile().getFile() != null) {
+					try {
+						mutipartTempInputFile = fileManager.writeMutipartFileTempFile("input", ".mp4",
+							fileRequest.getVideoFile().getFile());
+					} catch (Exception ex) {
+						throw new ApiExceptionImpl(ErrorCodeImpl.INTERNAL_SERVER_ERROR, ex);
+					}
 				}
 				lecture = lectureUseCase.updateVideoLecture(
 					lectureId,
@@ -152,6 +156,17 @@ public class LectureController {
 	) {
 		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
 			return API.OK(lectureUseCase.getLecture(lectureId));
+		}
+		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
+	}
+
+	@GetMapping("v1/lectures/videos/conditions")
+	public API<List<LectureVideoCondition>> getLectureVideoConditions(
+		@AdminUserAuthInjection AdminUserAuth adminUserAuth,
+		@RequestParam("lectureIds") List<Long> lectureIds
+	) {
+		if (!adminUserAuth.getAdminUserId().equals(AuthConstant.NOT_EXIST)) {
+			return API.OK(lectureUseCase.getLectureVideoConditionList(lectureIds));
 		}
 		throw new ApiExceptionImpl(ErrorCodeImpl.UNAUTHORIZED);
 	}

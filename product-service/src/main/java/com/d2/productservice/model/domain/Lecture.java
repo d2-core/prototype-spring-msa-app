@@ -6,6 +6,7 @@ import java.util.List;
 import com.d2.productservice.model.dto.LectureDto;
 import com.d2.productservice.model.dto.LectureReferenceDto;
 import com.d2.productservice.model.dto.LectureTimelineDto;
+import com.d2.productservice.model.dto.VideoStreamDto;
 import com.d2.productservice.model.enums.LectureExportType;
 import com.d2.productservice.model.enums.LectureType;
 
@@ -17,9 +18,9 @@ import lombok.Data;
 public class Lecture {
 	private final Long id;
 	private final Long courseId;
+	private final VideoStreamDto videoStream;
 	private final String title;
 	private final String description;
-	private final Long videoStreamId;
 	private final String thumbnailUrl;
 	private final LectureType lectureType;
 	private final Long order;
@@ -33,9 +34,9 @@ public class Lecture {
 		return new Lecture(
 			lectureDto.getId(),
 			lectureDto.getCourseId(),
+			lectureDto.getVideoStreamDto(),
 			lectureDto.getTitle(),
 			lectureDto.getDescription(),
-			lectureDto.getVideoStreamId(),
 			lectureDto.getThumbnailImageUrl(),
 			lectureDto.getLectureType(),
 			lectureDto.getOrder(),

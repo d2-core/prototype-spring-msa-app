@@ -1,6 +1,5 @@
 package com.d2.productservice.model.dto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.d2.core.model.enums.VideoResolution;
@@ -16,30 +15,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VideoStreamDto {
 	private Long id;
+	private Long foreignId;
 	private String videoUrl;
 	private Integer duration;
-	private String videoFormat;
-	private Long originalVideoSize;
-	private List<VideoResolution> supportedVideoResolution;
-	private List<String> originalSupportableVideoQualities;
-	private Integer transcodeProgress;
+	private List<VideoResolution> supportedVideoResolutions;
 	private VideoTranscodeStatus videoTranscodeStatus;
-	private LocalDateTime createdAt;
-	private LocalDateTime updateAt;
+	private Integer transcodeProgress;
 
-	public static VideoStreamDto from(VideoSteamJpaEntity entity) {
+	public static VideoStreamDto from(VideoSteamJpaEntity videoSteamJpaEntity) {
 		return new VideoStreamDto(
-			entity.getId(),
-			entity.getVideoUrl(),
-			entity.getDuration(),
-			entity.getVideoFormat(),
-			entity.getOriginalVideoSize(),
-			entity.getSupportedVideoResolution(),
-			entity.getOriginalSupportableVideoQualities(),
-			entity.getTranscodeProgress(),
-			entity.getVideoTranscodeStatus(),
-			entity.getCreatedAt(),
-			entity.getUpdateAt()
+			videoSteamJpaEntity.getId(),
+			null,
+			videoSteamJpaEntity.getVideoUrl(),
+			videoSteamJpaEntity.getDuration(),
+			videoSteamJpaEntity.getSupportedVideoResolutions(),
+			videoSteamJpaEntity.getVideoTranscodeStatus(),
+			videoSteamJpaEntity.getTranscodeProgress()
 		);
 	}
 }

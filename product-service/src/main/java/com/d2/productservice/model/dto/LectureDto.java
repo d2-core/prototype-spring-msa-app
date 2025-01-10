@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.d2.productservice.adapter.out.persistence.lecture.LectureJpaEntity;
+import com.d2.productservice.adapter.out.persistence.video.VideoSteamJpaEntity;
 import com.d2.productservice.model.enums.LectureExportType;
 import com.d2.productservice.model.enums.LectureStatus;
 import com.d2.productservice.model.enums.LectureType;
@@ -18,9 +19,9 @@ import lombok.NoArgsConstructor;
 public class LectureDto {
 	private Long id;
 	private Long courseId;
+	private VideoStreamDto videoStreamDto;
 	private String title;
 	private String description;
-	private Long videoStreamId;
 	private String thumbnailImageUrl;
 	private LectureType lectureType;
 	private Long order;
@@ -32,12 +33,17 @@ public class LectureDto {
 	private LocalDateTime updatedAt;
 
 	public static LectureDto from(LectureJpaEntity entity) {
+		VideoStreamDto videoStream = null;
+		VideoSteamJpaEntity videoSteamJpaEntity = entity.getVideoSteamJpaEntity();
+		if (videoSteamJpaEntity != null) {
+			videoStream = VideoStreamDto.from(videoSteamJpaEntity);
+		}
 		return new LectureDto(
 			entity.getId(),
 			entity.getCourseJpaEntity() != null ? entity.getCourseJpaEntity().getId() : null,
+			videoStream,
 			entity.getTitle(),
 			entity.getDescription(),
-			entity.getVideoSteamJpaEntity() != null ? entity.getVideoSteamJpaEntity().getId() : null,
 			entity.getThumbnailImageUrl(),
 			entity.getLectureType(),
 			entity.getOrderIndex(),

@@ -27,6 +27,7 @@ import com.d2.productservice.application.port.out.SendPort;
 import com.d2.productservice.application.port.out.VideoStreamPort;
 import com.d2.productservice.model.SendLectureEvent;
 import com.d2.productservice.model.domain.Lecture;
+import com.d2.productservice.model.domain.LectureVideoCondition;
 import com.d2.productservice.model.dto.DeleteFileDto;
 import com.d2.productservice.model.dto.LectureDto;
 import com.d2.productservice.model.dto.LectureReferenceDto;
@@ -72,7 +73,7 @@ public class LectureService implements LectureUseCase {
 			lectureDto = lecturePort.update(lectureDto.getId(), filesDto.thumbnailUrl(), filesDto.lectureReferences());
 
 			if (videoFile != null) {
-				registerLectureVideo(mutipartTempInputFile, videoFile);
+				registerLectureVideo(lectureDto.getId(), mutipartTempInputFile, videoFile);
 			}
 
 			sendPort.sendLectureEvent(new SendLectureEvent(lectureDto.getId(), LectureEvent.UPSERT));
@@ -116,7 +117,7 @@ public class LectureService implements LectureUseCase {
 				lectureExportType);
 
 			if (videoFile != null && videoFile.getFile() != null) {
-				updateLectureVideo(lectureDto.getId(), lectureDto.getVideoStreamId(),
+				updateLectureVideo(lectureDto.getId(), lectureDto.getVideoStreamDto().getId(),
 					mutipartTempInputFile, videoFile);
 			}
 
@@ -180,6 +181,14 @@ public class LectureService implements LectureUseCase {
 		return Lecture.from(lectureDto);
 	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public List<LectureVideoCondition> getLectureVideoConditionList(List<Long> lectureIds) {
+		return lecturePort.getLectureVideoConditionList(lectureIds)
+			.stream().map(LectureVideoCondition::from)
+			.collect(Collectors.toList());
+	}
+
 	@Transactional
 	@Override
 	public void updateExportType(Long lectureId, LectureExportType lectureExportType) {
@@ -208,7 +217,7 @@ public class LectureService implements LectureUseCase {
 		return new FilesDto(thumbnailUrl, lectureReferences);
 	}
 
-	public void registerLectureVideo(File mutipartTempInputFile, FileFormDto videoFile) {
+	public void registerLectureVideo(Long lectureId, File mutipartTempInputFile, FileFormDto videoFile) {
 		try {
 			String videoUniqueKey = hlsVideoStoragePort.getVideoId();
 			List<VideoResolution> supportedVideoResolutions = List.of(VideoResolution.P360);
@@ -216,6 +225,8 @@ public class LectureService implements LectureUseCase {
 				mutipartTempInputFile, supportedVideoResolutions);
 
 			VideoStreamDto videoStreamDto = videoStreamPort.register(videoConvertDto);
+
+			lecturePort.update(lectureId, videoStreamDto.getId());
 
 			uploadVideo(videoUniqueKey, videoStreamDto.getId(), videoConvertDto);
 		} catch (Exception ex) {
@@ -254,7 +265,6 @@ public class LectureService implements LectureUseCase {
 		CompletableFuture.runAsync(() -> {
 			String expectedVideoUrl = hlsVideoStoragePort.getExpectedVideoUrl(videoUniqueKey);
 			try {
-				videoStreamPort.update(videoStreamId, 0, VideoTranscodeStatus.PROGRESS);
 				String uploadVideoUrl = hlsVideoStoragePort.uploadVideo(videoUniqueKey, videoConvertDto,
 					(progress) -> videoStreamPort.update(videoStreamId, progress, VideoTranscodeStatus.PROGRESS));
 				videoStreamPort.update(videoStreamId, uploadVideoUrl, 100, VideoTranscodeStatus.COMPLETE);

@@ -6,6 +6,7 @@ import java.util.List;
 import com.d2.core.model.dto.FileFormDto;
 import com.d2.core.model.dto.ReferenceFileFormDto;
 import com.d2.productservice.model.domain.Lecture;
+import com.d2.productservice.model.domain.LectureVideoCondition;
 import com.d2.productservice.model.dto.LectureTimelineDto;
 import com.d2.productservice.model.enums.LectureExportType;
 
@@ -33,6 +34,8 @@ public interface LectureUseCase {
 	List<Lecture> getLectureList();
 
 	Lecture getLecture(Long lectureId);
+
+	List<LectureVideoCondition> getLectureVideoConditionList(List<Long> lectureIds);
 
 	void updateExportType(Long lectureId, LectureExportType lectureExportType);
 }

@@ -6,6 +6,7 @@ import com.d2.productservice.model.dto.DeleteFileDto;
 import com.d2.productservice.model.dto.LectureDto;
 import com.d2.productservice.model.dto.LectureReferenceDto;
 import com.d2.productservice.model.dto.LectureTimelineDto;
+import com.d2.productservice.model.dto.VideoStreamDto;
 import com.d2.productservice.model.enums.LectureExportType;
 import com.d2.productservice.model.enums.LectureType;
 
@@ -29,6 +30,8 @@ public interface LecturePort {
 	List<LectureDto> getLectureList();
 
 	List<LectureDto> getLectureList(Long courseId);
+
+	List<VideoStreamDto> getLectureVideoConditionList(List<Long> lectureIds);
 
 	LectureDto getLecture(Long lectureId);
 

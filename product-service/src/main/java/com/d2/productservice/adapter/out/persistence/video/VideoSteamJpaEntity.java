@@ -53,7 +53,7 @@ public class VideoSteamJpaEntity {
 
 	@Convert(converter = VideoResolutionListConverter.class)
 	@Column(nullable = false, columnDefinition = "text")
-	private List<VideoResolution> supportedVideoResolution;
+	private List<VideoResolution> supportedVideoResolutions;
 
 	@Convert(converter = StringListConverter.class)
 	@Column(nullable = false, columnDefinition = "text")
@@ -77,14 +77,14 @@ public class VideoSteamJpaEntity {
 	}
 
 	public VideoSteamJpaEntity(String videoUniqueKey, Integer duration, String videoFormat, Long originalVideoSize,
-		List<VideoResolution> supportedVideoResolution, List<String> originalSupportableVideoQualities,
+		List<VideoResolution> supportedVideoResolutions, List<String> originalSupportableVideoQualities,
 		VideoTranscodeStatus videoTranscodeStatus) {
 		this.videoUniqueKey = videoUniqueKey;
 		this.videoUrl = "";
 		this.duration = duration;
 		this.videoFormat = videoFormat;
 		this.originalVideoSize = originalVideoSize;
-		this.supportedVideoResolution = supportedVideoResolution;
+		this.supportedVideoResolutions = supportedVideoResolutions;
 		this.originalSupportableVideoQualities = originalSupportableVideoQualities;
 		this.transcodeProgress = 0;
 		this.videoTranscodeStatus = videoTranscodeStatus;

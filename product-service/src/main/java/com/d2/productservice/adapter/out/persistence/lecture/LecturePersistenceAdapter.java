@@ -10,11 +10,13 @@ import com.d2.core.error.ErrorCodeImpl;
 import com.d2.core.exception.ApiExceptionImpl;
 import com.d2.core.model.enums.ReferenceType;
 import com.d2.productservice.adapter.out.persistence.video.QVideoSteamJpaEntity;
+import com.d2.productservice.adapter.out.persistence.video.VideoSteamJpaEntity;
 import com.d2.productservice.application.port.out.LecturePort;
 import com.d2.productservice.model.dto.DeleteFileDto;
 import com.d2.productservice.model.dto.LectureDto;
 import com.d2.productservice.model.dto.LectureReferenceDto;
 import com.d2.productservice.model.dto.LectureTimelineDto;
+import com.d2.productservice.model.dto.VideoStreamDto;
 import com.d2.productservice.model.enums.FileType;
 import com.d2.productservice.model.enums.LectureExportType;
 import com.d2.productservice.model.enums.LectureStatus;
@@ -113,7 +115,6 @@ public class LecturePersistenceAdapter implements LecturePort {
 				lectureJpaEntity.id,
 				Expressions.asNumber(courseId).as("courseId"),
 				lectureJpaEntity.title,
-				lectureJpaEntity.description,
 				lectureJpaEntity.thumbnailImageUrl,
 				lectureJpaEntity.lectureType,
 				lectureJpaEntity.orderIndex.as("order"),
@@ -130,12 +131,47 @@ public class LecturePersistenceAdapter implements LecturePort {
 	}
 
 	@Override
+	public List<VideoStreamDto> getLectureVideoConditionList(List<Long> lectureIds) {
+		QVideoSteamJpaEntity videoStream = QVideoSteamJpaEntity.videoSteamJpaEntity;
+		QLectureJpaEntity lecture = QLectureJpaEntity.lectureJpaEntity;
+
+		List<VideoStreamDto> videoStreams = jpqlQueryFactory
+			.select(Projections.fields(VideoStreamDto.class,
+				videoStream.id,
+				lecture.id.as("foreignId"),
+				videoStream.videoUrl,
+				videoStream.duration,
+				videoStream.videoTranscodeStatus,
+				videoStream.transcodeProgress
+			))
+			.from(lecture)
+			.join(videoStream)
+			.on(lecture.videoSteamJpaEntity.id.eq(videoStream.id))
+			.where(lecture.id.in(lectureIds))
+			.fetch();
+
+		if (videoStreams.isEmpty()) {
+			throw new ApiExceptionImpl(ErrorCodeImpl.NOT_FOUND);
+		}
+
+		return videoStreams;
+	}
+
+	@Override
 	public LectureDto getLecture(Long lectureId) {
 		QLectureJpaEntity lectureJpaEntity = QLectureJpaEntity.lectureJpaEntity;
+		QVideoSteamJpaEntity videoSteamJpaEntity = QVideoSteamJpaEntity.videoSteamJpaEntity;
+
 		LectureDto result = jpqlQueryFactory
 			.select(Projections.fields(LectureDto.class,
 				Expressions.asNumber(lectureId).as("id"),
 				lectureJpaEntity.courseJpaEntity.id.as("courseId"),
+				Projections.fields(VideoStreamDto.class,
+					videoSteamJpaEntity.id,
+					videoSteamJpaEntity.videoUrl,
+					videoSteamJpaEntity.duration,
+					videoSteamJpaEntity.supportedVideoResolutions
+				).as("videoStreamDto"),
 				lectureJpaEntity.title,
 				lectureJpaEntity.description,
 				lectureJpaEntity.thumbnailImageUrl,
@@ -149,8 +185,12 @@ public class LecturePersistenceAdapter implements LecturePort {
 				lectureJpaEntity.updatedAt
 			))
 			.from(lectureJpaEntity)
+			.leftJoin(lectureJpaEntity.videoSteamJpaEntity, videoSteamJpaEntity)
 			.where(lectureJpaEntity.id.eq(lectureId))
 			.fetchOne();
+
+		List<VideoSteamJpaEntity> videoSteamJpaEntities = jpqlQueryFactory.selectFrom(videoSteamJpaEntity)
+			.fetch();
 
 		if (result != null) {
 			return result;
